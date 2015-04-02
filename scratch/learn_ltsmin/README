@@ -1,0 +1,55 @@
+README of the Peterson's Algorithm
+==========================================
+
+Given files
+
+File                     | Description
+-------------------------|------------
+`README.md`              | This file
+`dlopen_peterson_impl.c` | Plugin implementation for any Sokoban board
+`peterson.c`             | C code for an implementation of Peterson's mutual exclusive algorithm
+`peterson.h`             | C header file for an implementation of Peterson's mutual exclusive algorithm
+`Makefile`
+
+Step 1: download and install the LTSmin toolset
+--
+
+Step 2: create shared library
+--
+```make```
+
+Step 4: run the example
+--
+```make test_seq``` or ```make test_mc```
+
+Result of ```make test_seq```
+```
+pins2lts-seq peterson.so --strategy=scc --ltl="[]!(C0 == 1 && C1 == 1)" --trace=solution1.gcf
+pins2lts-seq: Registering PINS so language module
+pins2lts-seq: Loading model from peterson.so
+pins2lts-seq: library has no initializer
+pins2lts-seq: loading model peterson_lock
+pins2lts-seq: Initializing peterson_lock plugin
+pins2lts-seq: completed loading model peterson_lock
+pins2lts-seq: LTL layer: formula: []!(C0 == 1 && C1 == 1)
+pins2lts-seq: Expression is: ([] (! ((C0 == 1) && (C1 == 1))))
+pins2lts-seq: buchi has 2 states
+pins2lts-seq:  state 0: non-accepting
+pins2lts-seq:   -> 0, | true
+pins2lts-seq:   -> 1, | (C0 == 1) && (C1 == 1)
+pins2lts-seq:  state 1: accepting
+pins2lts-seq:   -> 1, | true
+pins2lts-seq: There are 3 state labels and 1 edge labels
+pins2lts-seq: State length is 5, there are 5 groups
+pins2lts-seq: Running scc search strategy
+pins2lts-seq: Using a tree for state storage
+pins2lts-seq: state space 9 levels, 26 states 42 transitions
+```
+
+Investigating `solution.gcf` if necessary:
+```
+make show
+```
+
+
+
