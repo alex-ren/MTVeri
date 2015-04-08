@@ -76,8 +76,8 @@ builder_dats2c = Builder(
                  )
 env_dats['BUILDERS']['ATS2C'] = builder_dats2c
 # env_dats.C("atsparemit_mylib")
-env_dats.Append(CPPPATH = INCLUDE, 
-                CCFLAGS = CFLAGS + [MALLOCFLAG])
+# env_dats.Append(CPPPATH = INCLUDE, 
+#                 CCFLAGS = CFLAGS + [MALLOCFLAG])
 
 # ########## ########## 
 
@@ -91,23 +91,43 @@ builder_sats2c = Builder(
                  )
 env_sats['BUILDERS']['ATS2C'] = builder_sats2c
 
-env_sats.Append(CPPPATH = INCLUDE, 
-                CCFLAGS = CFLAGS)
+# env_sats.Append(CPPPATH = INCLUDE, 
+#                 CCFLAGS = CFLAGS)
 
 def compile_atsfiles(files):
     objects = []
+
+    #  ##########
+    
+    if 'CPPPATH' in env_sats:
+        CPPPATH = env_sats['CPPPATH'] + INCLUDE,
+    else:
+        CPPPATH = INCLUDE,
+
+    #  ##########
+
     for file in files:
         [fname, fext] = os.path.splitext(file)
         if fext == ".sats":
             # I can only specify one argument since I've specified
             # the src_suffix when creating the Builder.
             cfiles = env_sats.ATS2C(fname)
+            print "================== 002 start"
+            print cfiles
+            print "================== 002 end"
+            print cfiles
+
             objfiles = env_sats.Object(target = fname + "_sats.o",
-                                       source = cfiles)
+                                       source = cfiles,
+                                       CPPPATH = CPPPATH,
+                                       CCFLAGS = env_sats['CCFLAGS'] + CFLAGS)
             objects += objfiles
         elif fext == ".dats":
             cfiles = env_dats.ATS2C(fname)
-            objfiles = env_dats.Object(fname + "_dats.o", cfiles)
+            objfiles = env_dats.Object(fname + "_dats.o", 
+                                       cfiles,
+                                       CPPPATH = CPPPATH,
+                                       CCFLAGS = env_sats['CCFLAGS'] + CFLAGS + [MALLOCFLAG])
             objects += objfiles
         else:
             raise RuntimeError(fext + " is not supported.")
@@ -116,6 +136,9 @@ def compile_atsfiles(files):
 
 def build(target, objects):
     myenv.Program(target = target, source = objects)
+    print "================== 001 start"
+    print objects
+    print "================== 001 end"
    
         
 # ######### ############
@@ -148,31 +171,31 @@ SOURCES_SATS = ["atsparemit.sats",
 
 
 SOURCES_DATS = ["atsparemit_mylib.dats",
-                "atsparemit_error.dats", 
-                "atsparemit_print.dats", 
-                "atsparemit_symbol.dats", 
-                "atsparemit_fname.dats", 
-                "atsparemit_posloc.dats", 
-                "atsparemit_global.dats", 
-                "atsparemit_syntax.dats", 
-                "atsparemit_lexerr.dats", 
-                "atsparemit_lexbuf.dats", 
-                "atsparemit_lexing.dats", 
-                "atsparemit_tokbuf.dats", 
-                "atsparemit_parerr.dats", 
-                "atsparemit_parsing.dats", 
-                "atsparemit_parsing_d0exp.dats", 
-                "atsparemit_parsing_d0ecl.dats", 
-                "atsparemit_parsing_instr.dats", 
-                "atsparemit_emit.dats", 
-                "atsparemit_typedef.dats", 
-                "atsparemit_emit_js.dats",
-                "atsparemit_emit2_js.dats",
+#                 "atsparemit_error.dats", 
+#                 "atsparemit_print.dats", 
+#                 "atsparemit_symbol.dats", 
+#                 "atsparemit_fname.dats", 
+#                 "atsparemit_posloc.dats", 
+#                 "atsparemit_global.dats", 
+#                 "atsparemit_syntax.dats", 
+#                 "atsparemit_lexerr.dats", 
+#                 "atsparemit_lexbuf.dats", 
+#                 "atsparemit_lexing.dats", 
+#                 "atsparemit_tokbuf.dats", 
+#                 "atsparemit_parerr.dats", 
+#                 "atsparemit_parsing.dats", 
+#                 "atsparemit_parsing_d0exp.dats", 
+#                 "atsparemit_parsing_d0ecl.dats", 
+#                 "atsparemit_parsing_instr.dats", 
+#                 "atsparemit_emit.dats", 
+#                 "atsparemit_typedef.dats", 
+#                 "atsparemit_emit_js.dats",
+#                 "atsparemit_emit2_js.dats",
                 "atsparemit_main_js.dats"
 ]
 
 objects = compile_atsfiles(SOURCES_DATS + SOURCES_SATS)
-ret = build("atscc2js", objects)
+# ret = build("atscc2js", objects)
 
 
 ######
