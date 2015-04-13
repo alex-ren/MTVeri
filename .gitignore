@@ -1,4 +1,7 @@
 *.swp
 .sconsign.dblite
 
+MYTAGS
+tags
+
 
