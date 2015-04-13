@@ -87,7 +87,7 @@ tags:
 	$(RMF) tags MYTAGS
 	find ./ -name "*.sats" -exec $(PATSOPT) --output-a MYTAGS --taggen -s {} \;
 	find ./ -name "*.dats" -exec $(PATSOPT) --output-a MYTAGS --taggen -d {} \; 
-	java -jar ../../../tool/ats-lang-tools.jar --input MYTAGS -c --output tags
+	java -jar ../../tool/ats-lang-tools.jar --input MYTAGS -c --output tags
 
 ######
 
