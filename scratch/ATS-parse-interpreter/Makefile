@@ -58,7 +58,7 @@ SOURCES_DATS += atsparemit_main_js.dats
 #
 ######
 
-MYTARGET=atscc2js
+MYTARGET=atsccint
 
 ######
 
@@ -80,7 +80,7 @@ cleanats:: ; $(RMF) *_?ats.c
 
 ######
 
-cleanall:: ; $(RMF) atscc2js
+cleanall:: ; $(RMF) atsccint
 
 .PHONY: tags
 tags:

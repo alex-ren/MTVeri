@@ -152,14 +152,15 @@ val d0cs = parse_from_fileref (inp)
 //
 val () = emit_time_stamp (out)
 //
-val ((*void*)) = emit_toplevel (out, d0cs)
-//
-val () =
-emit_text (out, "\n/* ****** ****** */\n")
-val () =
-emit_text (out, "\n/* end-of-compilation-unit */")
-//
-val ((*flusing*)) = emit_newline (out)
+val () = println! ("All set")
+// val ((*void*)) = emit_toplevel (out, d0cs)
+// //
+// val () =
+// emit_text (out, "\n/* ****** ****** */\n")
+// val () =
+// emit_text (out, "\n/* end-of-compilation-unit */")
+// //
+// val ((*flusing*)) = emit_newline (out)
 //
 in
   // nothing
@@ -331,7 +332,7 @@ case+ arglst of
   in
     if wait0 then (
       if state.ncomarg = 0
-        then atscc2js_usage ("atscc2js")
+        then atscc2js_usage ("atsccint")
         else atscc2js_fileref (state, stdin_ref)
     ) (* end of [if] *)
   end // end of [list_nil]
@@ -420,7 +421,7 @@ case+ key of
   } (* end of [-o] *)
 //
 | "-h" => {
-    val () = atscc2js_usage ("atscc2js")
+    val () = atscc2js_usage ("atsccint")
     val () = state.waitkind := WTKnone(*void*)
     val () = if state.ninputfile < 0 then state.ninputfile := 0
   } (* end of [-h] *)
@@ -455,7 +456,7 @@ case+ key of
   } (* end of [--output] *)
 //
 | "--help" => {
-    val () = atscc2js_usage ("atscc2js")
+    val () = atscc2js_usage ("atsccint")
     val () = state.waitkind := WTKnone(*void*)
     val () = if state.ninputfile < 0 then state.ninputfile := 0
   } (* end of [--help] *)
@@ -485,6 +486,7 @@ comarglst_parse{n:nat}
 implement
 comarg_parse
   (str) = let
+// val () = ($effmask_all (println! ("str is ", str)))
 //
 fun
 loop
@@ -504,8 +506,10 @@ loop
 val str = g1ofg0(str)
 val len = string_length (str)
 //
+  val ret = loop (str, sz2i(len), 0)
+  val COMARGkey (rx, rstr) = ret
 in
-  loop (str, sz2i(len), 0)
+  ret
 end // end of [comarg_parse]
 
 (* ****** ****** *)
@@ -523,6 +527,8 @@ loop
 (
 if i < argc
   then let
+    val COMARGkey (rx, rstr) = comarg_parse (argv[i])
+    // val () = println! ("comarg is ", rstr, " n is ", rx)
     val res = list_vt_cons (comarg_parse (argv[i]), res)
   in
     loop (argv, i+1, res)
@@ -547,7 +553,7 @@ main0 (argc, argv) =
 val () =
 prerrln!
 (
-  "Hello from atscc2js!"
+  "Hello from atsccint!"
 ) (* end of [val] *)
 //
 //
@@ -573,14 +579,14 @@ val () =
 if
 state.nerror = 1
 then let
-  val () = prerrln! ("atscc2js: there is a reported error.")
+  val () = prerrln! ("atsccint: there is a reported error.")
 in
   // nothing
 end // end of [then]
 else if
 state.nerror >= 2
 then let
-  val () = prerrln! ("atscc2js: there are mutiple reported errors.")
+  val () = prerrln! ("atsccint: there are mutiple reported errors.")
 in
   // nothing
 end // end of [then]
@@ -588,7 +594,7 @@ else () // end of [else]
 //
 (*
 val () =
-prerrln! ("Good-bye from atscc2js!")
+prerrln! ("Good-bye from atsccint!")
 *)
 //
 } (* end of [main0] *)
