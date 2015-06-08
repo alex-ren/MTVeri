@@ -23,11 +23,13 @@ CATSPARSEMIT=./.CATS-parsemit
 
 SOURCES_DATS :=
 SOURCES_DATS += atsccint_main.dats
+SOURCES_DATS += atsccint_interpreter.dats
 # SOURCES_DATS += atsccint_emit.dats
 # SOURCES_DATS += atsccint_emit2.dats
 
 SOURCES_SATS :=
 SOURCES_SATS += $(CATSPARSEMIT)/catsparse.sats
+SOURCES_SATS += atsccint_interpreter.sats
 
 SOURCES_CATS :=
 SOURCES_CATS += $(CATSPARSEMIT)/catsparse_mylib_dats.c
@@ -83,9 +85,12 @@ cleanall:: ; $(RMF) ./.CATS-parsemit/*
 .PHONY: tags
 tags:
 	$(RMF) tags MYTAGS
-	find ./ -name "*.sats" -exec $(PATSOPT) --output-a MYTAGS --taggen -s {} \;
-	find ./ -name "*.dats" -exec $(PATSOPT) --output-a MYTAGS --taggen -d {} \; 
+	cp $(PATSHOMERELOC)/projects/MEDIUM/CATS-parsemit/MYTAGS ./MYTAGS
+	find $(PWD) ! -path "*.CATS-parsemit*" -name "*.sats" -exec $(PATSOPT) --output-a MYTAGS --taggen -s {} \;
+	find $(PWD) -name "*.dats" -exec $(PATSOPT) --output-a MYTAGS --taggen -d {} \; 
 	java -jar ../../tool/ats-lang-tools.jar --input MYTAGS -c --output tags
+	cp $(PATSHOME)/prelude/CATS/tags ./tags_cats
+	cp $(PATSHOME)/ccomp/runtime/tags ./tags_c
 ###### end of [Makefile] ######
 
 

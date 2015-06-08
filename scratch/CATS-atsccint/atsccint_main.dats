@@ -58,6 +58,7 @@ catsparse_include_all_dynload(): void = "ext#"
 
 // dynload "./atscc2js_emit.dats"
 // dynload "./atscc2js_emit2.dats"
+dynload "./atsccint_interpreter.dats"
 
 (* ****** ****** *)
 //
@@ -142,10 +143,10 @@ val oc = state.outchan
 val out = outchan_get_fileref (oc)
 //
 val d0cs = parse_from_fileref (inp)
-// //
+//
 // val () = emit_time_stamp (out)
-// //
-// val ((*void*)) = emit_toplevel (out, d0cs)
+//
+val ((*void*)) = fprint_d0eclist (out, d0cs)
 // //
 // val () =
 // emit_text (out, "\n/* ****** ****** */\n")
