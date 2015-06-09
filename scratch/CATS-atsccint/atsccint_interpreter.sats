@@ -17,6 +17,8 @@ abstype atsccint_value_type
 fun interpret_toplevel (d0cs: d0eclist): program
 
 
+abstype scope
+
 
 absviewtype stack_type
 vtypedef stack = stack_type
