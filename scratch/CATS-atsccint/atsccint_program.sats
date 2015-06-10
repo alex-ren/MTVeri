@@ -8,12 +8,18 @@ CATSPARSEMIT_targetloc "./.CATS-parsemit"
 
 staload "{$CATSPARSEMIT}/catsparse.sats"
 
-datatype value_node =
-| VPTR of (ptr)
-
 datatype type_t =
 | INT
 | CHAR
+
+datatype value_node =
+| VPTR of (ptr)
+where
+value = '{
+  value_type = type_t,
+  value_node = value_node
+}
+
 
 datatype instruction_node =
 | DEC
@@ -24,6 +30,8 @@ instruction = '{
 }
 and
 instr_lst = List0 instruction
+
+typedef ip = instr_lst
 
 
 abstype function_type
