@@ -14,17 +14,17 @@ staload "./atsccint_program.sats"
 
 abstype atsccint_value_type
 
-fun interpret_toplevel (d0cs: d0eclist): program
+fun interpret_toplevel (d0cs: d0eclist): itp0program
 
 
 absviewtype scope
 
 fun scope_new (): scope
-fun scope_get_ip (s: !scope): ip
-fun scope_set_ip (ip: ip, s: !scope): void
-fun scope_get_value (s: !scope, name: symbol): value
-fun scope_add_value (s: !scope, name: symbol, v: value): bool
-fun scope_update_value (s: !scope, name: symbol, v: value): bool
+fun scope_get_ip (s: !scope): itp0ip
+fun scope_set_ip (ip: itp0ip, s: !scope): void
+fun scope_get_value (s: !scope, name: symbol): itp0value
+fun scope_add_value (s: !scope, name: symbol, v: itp0value): bool
+fun scope_update_value (s: !scope, name: symbol, v: itp0value): bool
 
 
 absviewtype stack_type

@@ -22,13 +22,19 @@ CATSPARSEMIT=./.CATS-parsemit
 ######
 
 SOURCES_DATS :=
-SOURCES_DATS += atsccint_main.dats
+SOURCES_DATS += atsccint_basics.dats
+SOURCES_DATS += atsccint_transform.dats
 SOURCES_DATS += atsccint_interpreter.dats
+SOURCES_DATS += atsccint_main.dats
 # SOURCES_DATS += atsccint_emit.dats
 # SOURCES_DATS += atsccint_emit2.dats
 
 SOURCES_SATS :=
 SOURCES_SATS += $(CATSPARSEMIT)/catsparse.sats
+SOURCES_SATS += atsccint_basics.sats
+SOURCES_SATS += atsccint_types.sats
+SOURCES_SATS += atsccint_program.sats
+SOURCES_SATS += atsccint_transform.sats
 SOURCES_SATS += atsccint_interpreter.sats
 
 SOURCES_CATS :=
