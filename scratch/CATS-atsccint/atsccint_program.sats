@@ -23,10 +23,12 @@ itp0value = '{
 datatype itp0instr_node =
 | DEC
 | GOTO of (ref itp0instr_lst)
+| TODO
 where
-itp0instr = '{
-    instr_loc = loc_t, instr_node = itp0instr_node
-}
+itp0instr = itp0instr_node
+// '{
+//     instr_loc = loc_t, instr_node = itp0instr_node
+// }
 and
 itp0instr_lst = List0 itp0instr
 
@@ -42,7 +44,14 @@ abstype itp0para_t
 typedef itp0para = itp0para_t
 typedef itp0para_lst = List0 itp0para
 
-fun ipt0func_create (name: symbol, paras: itp0para_lst, body: itp0instr_lst): itp0func
+symintr itp0para_create
+fun itp0para_create_withname (id: itp0id, ty: itp0type): itp0para
+fun itp0para_create_noname (ty: itp0type): itp0para
+overload itp0para_create with itp0para_create_withname
+overload itp0para_create with itp0para_create_noname
+
+fun itp0func_create (name: itp0id, paras: itp0para_lst, body: itp0instr_lst): itp0func
+
 
 
 
