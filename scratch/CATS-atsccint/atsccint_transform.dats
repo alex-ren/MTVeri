@@ -116,70 +116,76 @@ end
 implement transform_fun (f0decl) = let
   val f0decl_node = f0decl.f0decl_node
   var name: itp0id?
-  var paras: itp0para_lst?
-  // fun get_fun_header (head: f0head, 
-  //                     name: &itp0id? >> itp0id,
-  //                     paras: &itp0para_lst? >> itp0para_lst
-  //                    ): void = let
-  //   val node = head.f0head_node
-  //   val+ F0HEAD (i0de, f0marg, s0exp) = node
-  //   val () = name := transform (i0de)
+  var paras: itp0paralst?
+  fun get_fun_header (head: f0head, 
+                      name: &itp0id? >> itp0id,
+                      paras: &itp0paralst? >> itp0paralst
+                     ): void = let
+    val node = head.f0head_node
+    val+ F0HEAD (i0de, f0marg, s0exp) = node
+    val () = name := transform (i0de)
 
-  //   //
-  //   vtypedef env = itp0para_lst
-  //   implement list_foreach$fwork<f0arg><itp0para_lst>(f0arg, paralst) = let
-  //     val f0arg_node = f0arg.f0arg_node
-  //     val para = (case+ f0arg_node of
-  //                | F0ARGnone (s0exp) => itp0para_create (transform (s0exp))
-  //                | F0ARGsome (i0de, s0exp) => let
-  //                  val id = transform (i0de)
-  //                  val ty = transform (s0exp)
-  //                in
-  //                  itp0para_create (id, ty)
-  //                end
-  //                )
-  //     val () = paralst := list_cons (para, paralst)
-  //   in end
+    //
+    vtypedef env = itp0paralst
+    implement list_foreach$fwork<f0arg><itp0paralst>(f0arg, paralst) = let
+      val f0arg_node = f0arg.f0arg_node
+      val para = (case+ f0arg_node of
+                 | F0ARGnone (s0exp) => itp0para_create (transform (s0exp))
+                 | F0ARGsome (i0de, s0exp) => let
+                   val id = transform (i0de)
+                   val ty = transform (s0exp)
+                 in
+                   itp0para_create (id, ty)
+                 end
+                 )
+      val () = paralst := list_cons (para, paralst)
+    in end
 
-  //   var paralst = list_nil ()
-  //   val () = list_foreach_env<f0arg><itp0para_lst>(f0marg.f0marg_node, paralst)
-  //   val paralst = list_reverse_append (paralst, list_nil ())
-  //   val () = paras := paralst
-  // in end  // end of [get_fun_header]
-  extern fun get_fun_header (head: f0head, 
-                      name: &itp0id? >> itp0id): void
+    var paralst = list_nil ()
+    val () = list_foreach_env<f0arg><itp0paralst>(f0marg.f0marg_node, paralst)
+    val paralst = list_reverse_append (paralst, list_nil ())
+    val () = paras := paralst
+  in end  // end of [get_fun_header]
 in
   case+ f0decl_node of
-  | F0DECLnone (f0head) => (let
-    val () = get_fun_header (f0head, name)
+  | F0DECLnone (f0head) => let
+    val () = get_fun_header (f0head, name, paras)
     val body = list_nil ()
-    extern fun lemma1 (): itp0id
-    extern fun lemma2 (): itp0para_lst
+    val func = itp0func_create (name, paras, body)
+    prval () = topize (name) // explicit topizatio
+    prval () = topize (paras) // explicit topizatio
   in
-    itp0func_create (lemma1(), lemma2(), body)
-  // in
-  //   itp0func_create (name, paras, body)
-  end)
-  | F0DECLsome (f0head, f0body) => (let
-    // val () = get_fun_header (f0head, name, paras)
-    // val+ F0BODY (tmpdeclst, instr0lst) = f0body.f0body_node
+    func
+  end
+  | F0DECLsome (f0head, f0body) => let
+    val () = get_fun_header (f0head, name, paras)
+    val+ F0BODY (tmpdeclst, instrlst) = f0body.f0body_node
     // // todo tmpdeclst
 
-    // // implement list_map$fopr<instr><itp0instr> (instr) = TODO
-    // // todo
-    // // case
+    val body = transform_inslst (instrlst)
+    val func = itp0func_create (name, paras, body)
 
-    val body = list_nil ()
-
-    // val body0 = list_map<instr><itp0instr> (instr0lst)
-    // val body = list_of_list_vt (body0)
-    extern fun lemma1 (): itp0id
-    extern fun lemma2 (): itp0para_lst
+    prval () = topize (name) // explicit topizatio
+    prval () = topize (paras) // explicit topizatio
   in
-    itp0func_create (lemma1(), lemma2(), body)
+    func
   end
-  )
 end
+
+
+abstype mymap (a:type, b:t@ype)
+
+extern fun {b:t@ype} mymap_create {a:type} (): mymap (a, b)
+extern fun {b:t@ype} mymap_insert {a:type} (m: mymap (a, b), key: a, v: &b): b
+
+// runtime error if not exist
+extern fun {b:t@ype} mymap_get {a:type} (key: a): b
+
+typedef insmap = mymap (itp0label, itp0instr)
+////
+// fun transform_inslst (inss: instrlst): itp0instrlst
+implement transform_inslst (inss) = let
+fun transform_inslst_loop (inss: instrlst, m: mymap 
     
 
 

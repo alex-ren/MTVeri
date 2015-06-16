@@ -30,3 +30,5 @@ overload transform with transform_i0de
 overload transform with transform_type_rec
 overload transform with transform_type
 
+fun transform_inslst (inss: instrlst): itp0instrlst
+
