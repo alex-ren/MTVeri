@@ -18,6 +18,8 @@ symintr transform
 fun transform_d0eclist (d0ecs: d0eclist): itp0program
 
 fun transform_i0de (i0de: i0de): itp0id
+fun transform_label (label: label): itp0label
+
 
 fun transform_type_rec (typec: tyrec): itp0type
 fun transform_type (s0exp: s0exp): itp0type
@@ -29,6 +31,8 @@ overload transform with transform_d0eclist
 overload transform with transform_i0de
 overload transform with transform_type_rec
 overload transform with transform_type
+overload transform with transform_label
 
+fun transform_exp (e: d0exp): itp0exp
 fun transform_inslst (inss: instrlst): itp0instrlst
 

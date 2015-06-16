@@ -11,6 +11,10 @@ staload "{$CATSPARSEMIT}/catsparse.sats"
 staload "./atsccint_basics.sats"
 staload "./atsccint_types.sats"
 
+datatype itp0exp =
+| TODO
+
+
 datatype itp0value_node =
 | VPTR of (ptr)
 where
@@ -21,16 +25,18 @@ itp0value = '{
 
 
 datatype itp0instr_node =
-| DEC
+| ITP0if of (itp0exp, itp0instrlst, itp0instrlstopt)
 | GOTO of (ref itp0instrlst)
-| TODO
+| REDIRECT of (itp0instrlst)  // This must be the last of the list.
+| LABEL of (itp0label)
+
 where
 itp0instr = itp0instr_node
 // '{
 //     instr_loc = loc_t, instr_node = itp0instr_node
 // }
-and
-itp0instrlst = List0 itp0instr
+and itp0instrlst = List0 itp0instr
+and itp0instrlstopt = Option itp0instrlst
 
 typedef itp0ip = itp0instrlst
 

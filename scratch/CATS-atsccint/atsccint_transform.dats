@@ -38,7 +38,7 @@ implement transform_d0eclist (d0ecs) = let
     | D0Cifndef (i0de, d0eclist) => println! ("D0Cnifdef skipped")
     // # typedef directive
     | D0Ctypedef (i0de, tyrec) => let
-      val id = transform (i0de)
+      val id = transform_i0de (i0de)
       val type = transform (tyrec)
     in
       itp0program_define_types (prog, id, type)
@@ -123,7 +123,7 @@ implement transform_fun (f0decl) = let
                      ): void = let
     val node = head.f0head_node
     val+ F0HEAD (i0de, f0marg, s0exp) = node
-    val () = name := transform (i0de)
+    val () = name := transform_i0de (i0de)
 
     //
     vtypedef env = itp0paralst
@@ -132,7 +132,7 @@ implement transform_fun (f0decl) = let
       val para = (case+ f0arg_node of
                  | F0ARGnone (s0exp) => itp0para_create (transform (s0exp))
                  | F0ARGsome (i0de, s0exp) => let
-                   val id = transform (i0de)
+                   val id = transform_i0de (i0de)
                    val ty = transform (s0exp)
                  in
                    itp0para_create (id, ty)
@@ -173,19 +173,123 @@ in
 end
 
 
-abstype mymap (a:type, b:t@ype)
+absvtype mymap (a:type, b:type)
 
-extern fun {b:t@ype} mymap_create {a:type} (): mymap (a, b)
-extern fun {b:t@ype} mymap_insert {a:type} (m: mymap (a, b), key: a, v: &b): b
+extern fun mymap_new {a:type} {b:type} (): mymap (a, b)
+extern fun mymap_destroy {a:type} {b:type} (m: mymap (a, b)): void
+
+extern fun mymap_insert {a:type} {b:type} (
+  m: !mymap (a, b), key: a, v: b): void
 
 // runtime error if not exist
-extern fun {b:t@ype} mymap_get {a:type} (key: a): b
+extern fun mymap_get {a:type} {b:type} (m: !mymap (a, b), key: a): b
 
-typedef insmap = mymap (itp0label, itp0instr)
-////
+vtypedef tagmap = mymap (itp0label, itp0instrlst)
+
+// abstype instr_stack
+// extern fun instr_stack_push (ins: itp0instrlst): void
+// extern fun instr_stack_push (ins: itp0instrlst): void
+
 // fun transform_inslst (inss: instrlst): itp0instrlst
 implement transform_inslst (inss) = let
-fun transform_inslst_loop (inss: instrlst, m: mymap 
+fun transform_inslst_loop1 (
+  inss: instrlst, 
+  res: &ptr? >> itp0instrlst,
+  backto: itp0instrlst,
+  tagmap: !tagmap): void =
+  case+ inss of
+  | list_nil () => (res := backto)
+  | list_cons (ins, inss2) =>
+    case+ ins.instr_node of
+    | ATSif (d0exp, instrlst, instrlstopt) => let
+      // exp for condition
+      val itp0exp = transform_exp (d0exp)
+
+      // rest of the instructions
+      var rest: ptr?
+      val () = transform_inslst_loop1 (inss2, rest, backto, tagmap)
+
+      // REDIRECT is always the last one in the list.
+      val backto2 = list_cons (REDIRECT (rest), list_nil ())
+
+      var inssthen: ptr?
+      val () = transform_inslst_loop1 (instrlst, inssthen, backto2, tagmap)
+
+      val insselseopt = (
+        case+ instrlstopt of
+        | Some (insselse0) => let
+          var insselse: ptr?
+          val () = transform_inslst_loop1 (insselse0, insselse, backto2, tagmap)
+        in
+          Some (insselse)
+        end
+        | None () => None ()
+      ): itp0instrlstopt
+
+      val ins_ITP0if = ITP0if (itp0exp, inssthen, insselseopt)
+      val () = res := list_cons (ins_ITP0if, rest)
+    in end
+    // | ATSINSfgoto (label) => let
+    //   val itp0label = transform_label (label)
+    //   val ins = GOTO (ref<itp0instrlst> (list_nil ()))
+    //   val () = res := list_cons (ins, _
+    //   todo
+
+    //   var rest: ptr?
+    //   val () = transform_inslst_loop1 (inss2, rest, backto, tagmap)
+    //   val itp0label = transform_label (label)
+    //   val () = mymap_insert (tagmap, itp0label, rest)
+    //   val () = res := rest
+    // in end
+    | ATSINSflab (label) => let
+
+      val itp0label = transform_label (label)
+      val ins = LABEL (itp0label)
+      val rest = list_vt_cons{itp0instr}{0} (ins, _)
+      // val y = $showtype (rest)
+extern castfn
+mytolist
+  {a:vt0p}
+  (xs: !a>>a):<!wrt> itp0instrlst
+
+// extern castfn
+// mytolist_vt
+//   {a:t0p}{n:int}
+//   (xs: a):<!wrt> list_vt (itp0instr, n)
+
+      val rest0 = mytolist (rest)
+      val () = res := rest0
+      val () = mymap_insert (tagmap, itp0label, rest0)
+
+      val+ list_vt_cons (_, rest1) = rest
+      val () = transform_inslst_loop1 (inss2, rest1, backto, tagmap)
+      // prval () = fold@ (rest)
+    in end
+
+    | todo => (res := list_nil ())
+    
+
+extern fun transform_inslst_loop_lab (inss: itp0instrlst, tagmap: !tagmap): void
+// todo implement
+
+var res: ptr?
+val tagmap = mymap_new ()
+val () = transform_inslst_loop1 (inss, res, list_nil (), tagmap)
+val () = transform_inslst_loop_lab (res, tagmap)
+
+val () = mymap_destroy (tagmap)
+in
+  res
+end
+
+// end of transform_inslst_loop1
+
+
+
+
+         
+
+
     
 
 
