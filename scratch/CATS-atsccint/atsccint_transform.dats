@@ -192,34 +192,39 @@ vtypedef tagmap = mymap (itp0label, itp0instrlst)
 
 // fun transform_inslst (inss: instrlst): itp0instrlst
 implement transform_inslst (inss) = let
+
+// handle branch instructions: ATSif
 fun transform_inslst_loop1 (
   inss: instrlst, 
   res: &ptr? >> itp0instrlst,
-  backto: itp0instrlst,
-  tagmap: !tagmap): void =
+  backto: itp0instrlst
+  // ,
+  // tagmap: !tagmap
+  ): void =
   case+ inss of
   | list_nil () => (res := backto)
   | list_cons (ins, inss2) =>
     case+ ins.instr_node of
+    // made from ATSif, ATSthen, ATSelse
     | ATSif (d0exp, instrlst, instrlstopt) => let
       // exp for condition
       val itp0exp = transform_exp (d0exp)
 
       // rest of the instructions
       var rest: ptr?
-      val () = transform_inslst_loop1 (inss2, rest, backto, tagmap)
+      val () = transform_inslst_loop1 (inss2, rest, backto)
 
       // REDIRECT is always the last one in the list.
       val backto2 = list_cons (REDIRECT (rest), list_nil ())
 
       var inssthen: ptr?
-      val () = transform_inslst_loop1 (instrlst, inssthen, backto2, tagmap)
+      val () = transform_inslst_loop1 (instrlst, inssthen, backto2)
 
       val insselseopt = (
         case+ instrlstopt of
         | Some (insselse0) => let
           var insselse: ptr?
-          val () = transform_inslst_loop1 (insselse0, insselse, backto2, tagmap)
+          val () = transform_inslst_loop1 (insselse0, insselse, backto2)
         in
           Some (insselse)
         end
@@ -229,44 +234,42 @@ fun transform_inslst_loop1 (
       val ins_ITP0if = ITP0if (itp0exp, inssthen, insselseopt)
       val () = res := list_cons (ins_ITP0if, rest)
     in end
-    // | ATSINSfgoto (label) => let
-    //   val itp0label = transform_label (label)
-    //   val ins = GOTO (ref<itp0instrlst> (list_nil ()))
-    //   val () = res := list_cons (ins, _
-    //   todo
-
-    //   var rest: ptr?
-    //   val () = transform_inslst_loop1 (inss2, rest, backto, tagmap)
-    //   val itp0label = transform_label (label)
-    //   val () = mymap_insert (tagmap, itp0label, rest)
-    //   val () = res := rest
-    // in end
+    // 
+    | ATSINSfgoto (label) => let
+      val itp0label = transform_label (label)
+      val ins = GOTO (ref<itp0instrlst> (list_nil ()))  // to be updated later
+    in 
+      addone (res, ins, inss2, backto)
+    end
+    // label used for tail call optimization for a function
     | ATSINSflab (label) => let
-
       val itp0label = transform_label (label)
       val ins = LABEL (itp0label)
-      val rest = list_vt_cons{itp0instr}{0} (ins, _)
-      // val y = $showtype (rest)
-extern castfn
-mytolist
-  {a:vt0p}
-  (xs: !a>>a):<!wrt> itp0instrlst
+    in 
+      addone (res, ins, inss2, backto)
+    end
+    // 
+    // created by ATSfunbody_beg() and ATSfunbody_end
+    | ATSfunbodyseq (inssbody) => let
+      val inssall = list_append<instr> (inssbody, inss2)
+    in
+      transform_inslst_loop1 (inssall, res, backto)
+    end
+    | ATSINSmove (i0de, d0exp) =>
 
-// extern castfn
-// mytolist_vt
-//   {a:t0p}{n:int}
-//   (xs: a):<!wrt> list_vt (itp0instr, n)
 
-      val rest0 = mytolist (rest)
-      val () = res := rest0
-      val () = mymap_insert (tagmap, itp0label, rest0)
-
-      val+ list_vt_cons (_, rest1) = rest
-      val () = transform_inslst_loop1 (inss2, rest1, backto, tagmap)
-      // prval () = fold@ (rest)
-    in end
 
     | todo => (res := list_nil ())
+and addone (res: &ptr? >> itp0instrlst,
+            ins: itp0instr, 
+            inss0: instrlst, 
+            backto: itp0instrlst): void = let
+  val () = res := list_cons {itp0instr}{0} (ins, _)
+  val list_cons (_, rest1) = res
+  val () = transform_inslst_loop1 (inss0, rest1, backto)
+  prval () = fold@ (res)
+in end
+
     
 
 extern fun transform_inslst_loop_lab (inss: itp0instrlst, tagmap: !tagmap): void
@@ -274,7 +277,7 @@ extern fun transform_inslst_loop_lab (inss: itp0instrlst, tagmap: !tagmap): void
 
 var res: ptr?
 val tagmap = mymap_new ()
-val () = transform_inslst_loop1 (inss, res, list_nil (), tagmap)
+val () = transform_inslst_loop1 (inss, res, list_nil ())
 val () = transform_inslst_loop_lab (res, tagmap)
 
 val () = mymap_destroy (tagmap)
