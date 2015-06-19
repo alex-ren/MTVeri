@@ -214,8 +214,8 @@ fun transform_inslst_loop1 (
       var rest: ptr?
       val () = transform_inslst_loop1 (inss2, rest, backto)
 
-      // REDIRECT is always the last one in the list.
-      val backto2 = list_cons (REDIRECT (rest), list_nil ())
+      // ITP0INSredirect is always the last one in the list.
+      val backto2 = list_cons (ITP0INSredirect (rest), list_nil ())
 
       var inssthen: ptr?
       val () = transform_inslst_loop1 (instrlst, inssthen, backto2)
@@ -231,20 +231,20 @@ fun transform_inslst_loop1 (
         | None () => None ()
       ): itp0instrlstopt
 
-      val ins_ITP0if = ITP0if (itp0exp, inssthen, insselseopt)
+      val ins_ITP0if = ITP0INSif (itp0exp, inssthen, insselseopt)
       val () = res := list_cons (ins_ITP0if, rest)
     in end
     // 
     | ATSINSfgoto (label) => let
       val itp0label = transform_label (label)
-      val ins = GOTO (ref<itp0instrlst> (list_nil ()))  // to be updated later
+      val ins = ITP0INSgoto (ref<itp0instrlst> (list_nil ()))  // to be updated later
     in 
       addone (res, ins, inss2, backto)
     end
     // label used for tail call optimization for a function
     | ATSINSflab (label) => let
       val itp0label = transform_label (label)
-      val ins = LABEL (itp0label)
+      val ins = ITP0INSlabel (itp0label)
     in 
       addone (res, ins, inss2, backto)
     end
@@ -255,11 +255,55 @@ fun transform_inslst_loop1 (
     in
       transform_inslst_loop1 (inssall, res, backto)
     end
-    | ATSINSmove (i0de, d0exp) =>
+    | ATSINSmove (i0de, d0exp) => let
+      val id = transform_i0de (i0de)
+      val exp = transform (d0exp)
+      val ins = ITP0INSmove (id, exp)
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | ATSINSmove_void (i0de, d0exp) => let
+      val exp = transform (d0exp)
+      val ins = ITP0INSmove_void (exp)
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | ATSreturn (i0de) => let
+      val id = transform_i0de (i0de)
+      val ins = ITP0return (id)
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | ATSreturn_void (i0de) => let
+      val ins = ITP0return_void ()
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | ATStailcalseq (inssbody) => let
+      val inssall = list_append<instr> (inssbody, inss2)
+    in
+      transform_inslst_loop1 (inssall, res, backto)
+    end
+    | ATSINSmove_tlcal (i0de, d0exp) => let
+      val id = transform_i0de (i0de)
+      val exp = transform_exp (d0exp)
+      val ins = ITP0INSmove (id, exp)
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | ATSINSargmove_tlcal (i0de_arg, i0de_apy) => let
+      val arg = transform_i0de (i0de_arg)
+      val apy = create_exp_from_i0de (i0de_apy)
+      val ins = ITP0INSmove (arg, apy)
+    in
+      addone (res, ins, inss2, backto)
+    end
+    | todo => let
+      val () = res := list_nil ()
+    in
+      $raise nosupport ("error in transforming instr")
+    end
 
-
-
-    | todo => (res := list_nil ())
 and addone (res: &ptr? >> itp0instrlst,
             ins: itp0instr, 
             inss0: instrlst, 
@@ -271,7 +315,6 @@ and addone (res: &ptr? >> itp0instrlst,
 in end
 
     
-
 extern fun transform_inslst_loop_lab (inss: itp0instrlst, tagmap: !tagmap): void
 // todo implement
 
@@ -286,7 +329,6 @@ in
 end
 
 // end of transform_inslst_loop1
-
 
 
 

@@ -3,8 +3,14 @@
 
 // test for function definition and tail call.
 
-fun fact (x: int): int = if x <= 0 then 1
-  else x * fact (x - 1)
+fun foo (): void = ()
+
+fun fact (x: int): int = if x <= 0 then let
+  val () = foo ()
+in
+  1
+end
+else x * fact (x - 1)
 
 fun fact1 (x:int, accu: int): int =
   if x <= 0 then accu
@@ -14,4 +20,6 @@ fun fact1 (x:int, accu: int): int =
 //   val () = print (x)
 //   val () = print ("\n")
 // in end
+
+
 

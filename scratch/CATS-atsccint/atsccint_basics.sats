@@ -15,6 +15,8 @@ fun itp0id_create (sym: symbol): itp0id
 
 typedef itp0label = itp0id
 
+exception nosupport of (string)
+
 
 
 

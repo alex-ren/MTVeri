@@ -25,10 +25,14 @@ itp0value = '{
 
 
 datatype itp0instr_node =
-| ITP0if of (itp0exp, itp0instrlst, itp0instrlstopt)
-| GOTO of (ref itp0instrlst)
-| REDIRECT of (itp0instrlst)  // This must be the last of the list.
-| LABEL of (itp0label)
+| ITP0INSif of (itp0exp, itp0instrlst, itp0instrlstopt)
+| ITP0INSgoto of (ref itp0instrlst)
+| ITP0INSredirect of (itp0instrlst)  // This must be the last of the list.
+| ITP0INSlabel of (itp0label)
+| ITP0INSmove of (itp0id, itp0exp)
+| ITP0INSmove_void of (itp0exp)
+| ITP0return of (itp0id)
+| ITP0return_void of ()
 
 where
 itp0instr = itp0instr_node
