@@ -1,11 +1,12 @@
 (* ****** ****** *)
 //
-// atsccint:
-// Interpreter for ATS
+// Atscc2js:
+// from ATS to JavaScript
 //
 (* ****** ****** *)
 //
-// Start: 05/31/2015
+// HX-2014-08-20: start
+// HX-2015-05-21: restructure
 //
 (* ****** ****** *)
 //
@@ -56,9 +57,8 @@ catsparse_include_all_dynload(): void = "ext#"
 //
 (* ****** ****** *)
 
-// dynload "./atscc2js_emit.dats"
-// dynload "./atscc2js_emit2.dats"
-// dynload "./atsccint_interpreter.dats"
+dynload "./atscc2js_emit.dats"
+dynload "./atscc2js_emit2.dats"
 
 (* ****** ****** *)
 //
@@ -132,11 +132,11 @@ end // end of [cmdstate_set_outchan]
 //
 extern
 fun
-atsccint_fileref
+atscc2js_fileref
   (state: &cmdstate >> _, filr: FILEref): void
 //
 implement
-atsccint_fileref
+atscc2js_fileref
   (state, inp) = let
 //
 val oc = state.outchan
@@ -144,20 +144,20 @@ val out = outchan_get_fileref (oc)
 //
 val d0cs = parse_from_fileref (inp)
 //
-// val () = emit_time_stamp (out)
+val () = emit_time_stamp (out)
 //
-val ((*void*)) = fprint_d0eclist (out, d0cs)
-// //
-// val () =
-// emit_text (out, "\n/* ****** ****** */\n")
-// val () =
-// emit_text (out, "\n/* end-of-compilation-unit */")
-// //
-// val ((*flusing*)) = emit_newline (out)
+val ((*void*)) = emit_toplevel (out, d0cs)
+//
+val () =
+emit_text (out, "\n/* ****** ****** */\n")
+val () =
+emit_text (out, "\n/* end-of-compilation-unit */")
+//
+val ((*flusing*)) = emit_newline (out)
 //
 in
   // nothing
-end // end of [atsccint_fileref]
+end // end of [atscc2js_fileref]
 
 (* ****** ****** *)
 //
@@ -165,13 +165,13 @@ macdef fopen = $STDIO.fopen
 //
 extern
 fun
-atsccint_basename
+atscc2js_basename
 (
   state: &cmdstate >> _, fname: string
 ) : void // end-of-fun
 //
 implement
-atsccint_basename
+atscc2js_basename
   (state, fname) = let
 //
 val inp =
@@ -191,7 +191,7 @@ val ((*void*)) =
   the_filename_push(filename_make(fname))
 //
 in
-  atsccint_fileref (state, inp)
+  atscc2js_fileref (state, inp)
 end // end of [then]
 else let
 //
@@ -205,7 +205,7 @@ in
   // nothing
 end // end of [else]
 //
-end // end of [atsccint_basename]
+end // end of [atscc2js_basename]
 
 (* ****** ****** *)
 
@@ -275,7 +275,7 @@ comarg_warning (str) = {
 (* ****** ****** *)
   
 fun
-atsccint_usage
+atscc2js_usage
   (cmd: string): void = {
 //
 val () =
@@ -304,7 +304,7 @@ println! ("  -h : for printing out this help usage")
 val () =
 println! ("  --help : for printing out this help usage")
 //
-} (* end of [atsccint_usage] *)
+} (* end of [atscc2js_usage] *)
   
 (* ****** ****** *)
 
@@ -330,8 +330,8 @@ case+ arglst of
   in
     if wait0 then (
       if state.ncomarg = 0
-        then atsccint_usage ("atsccint")
-        else atsccint_fileref (state, stdin_ref)
+        then atscc2js_usage ("atscc2js")
+        else atscc2js_fileref (state, stdin_ref)
     ) (* end of [if] *)
   end // end of [list_nil]
 //
@@ -366,7 +366,7 @@ case+ arg of
         process_cmdline2_COMARGkey2 (state, arglst, key)
     | COMARGkey (_, fname) => let
         val () = state.ninputfile := nif + 1
-        val () = atsccint_basename (state, fname(*input*))
+        val () = atscc2js_basename (state, fname(*input*))
       in
         process_cmdline (state, arglst)
       end // end of [COMARGkey]
@@ -419,7 +419,7 @@ case+ key of
   } (* end of [-o] *)
 //
 | "-h" => {
-    val () = atsccint_usage ("atsccint")
+    val () = atscc2js_usage ("atscc2js")
     val () = state.waitkind := WTKnone(*void*)
     val () = if state.ninputfile < 0 then state.ninputfile := 0
   } (* end of [-h] *)
@@ -454,7 +454,7 @@ case+ key of
   } (* end of [--output] *)
 //
 | "--help" => {
-    val () = atsccint_usage ("atsccint")
+    val () = atscc2js_usage ("atscc2js")
     val () = state.waitkind := WTKnone(*void*)
     val () = if state.ninputfile < 0 then state.ninputfile := 0
   } (* end of [--help] *)
@@ -546,7 +546,7 @@ main0 (argc, argv) =
 val () =
 prerrln!
 (
-  "Hello from atsccint!"
+  "Hello from atscc2js!"
 ) (* end of [val] *)
 //
 //
@@ -572,14 +572,14 @@ val () =
 if
 state.nerror = 1
 then let
-  val () = prerrln! ("atsccint: there is a reported error.")
+  val () = prerrln! ("atscc2js: there is a reported error.")
 in
   // nothing
 end // end of [then]
 else if
 state.nerror >= 2
 then let
-  val () = prerrln! ("atsccint: there are mutiple reported errors.")
+  val () = prerrln! ("atscc2js: there are mutiple reported errors.")
 in
   // nothing
 end // end of [then]
@@ -587,16 +587,11 @@ else () // end of [else]
 //
 (*
 val () =
-prerrln! ("Good-bye from atsccint!")
+prerrln! ("Good-bye from atscc2js!")
 *)
 //
 } (* end of [main0] *)
 
-
-implement
-emit_COMMENT_line(out, tok) = ()
-implement
-emit_COMMENT_block(out, tok) = ()
 (* ****** ****** *)
 
-(* end of [atsccint_main.dats] *)
+(* end of [atscc2js_main.dats] *)
