@@ -1,1 +1,0 @@
-../ATS-parse-emit/atsparemit_posloc.dats
