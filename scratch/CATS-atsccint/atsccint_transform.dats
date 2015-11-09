@@ -16,8 +16,24 @@ staload "./atsccint_program.sats"
 
 staload "./atsccint_transform.sats"
 
+(* *************** ***************** *)
 
-implement transform_d0eclist (d0ecs) = let
+absvtype mymap (a:type, b:type)
+
+extern fun mymap_new {a:type} {b:type} (): mymap (a, b)
+extern fun mymap_destroy {a:type} {b:type} (m: mymap (a, b)): void
+
+extern fun mymap_insert {a:type} {b:type} (
+  m: !mymap (a, b), key: a, v: b): void
+
+// runtime error if not exist
+extern fun mymap_get {a:type} {b:type} (m: !mymap (a, b), key: a): b
+
+vtypedef tagmap = mymap (itp0label, itp0instrlst)
+
+(* *************** ***************** *)
+
+implement transformer_trans_d0eclist (cvt, d0ecs) = let
   var prog = itp0program_new ()
 
   vtypedef env = itp0program
@@ -173,19 +189,6 @@ in
 end
 
 
-absvtype mymap (a:type, b:type)
-
-extern fun mymap_new {a:type} {b:type} (): mymap (a, b)
-extern fun mymap_destroy {a:type} {b:type} (m: mymap (a, b)): void
-
-extern fun mymap_insert {a:type} {b:type} (
-  m: !mymap (a, b), key: a, v: b): void
-
-// runtime error if not exist
-extern fun mymap_get {a:type} {b:type} (m: !mymap (a, b), key: a): b
-
-vtypedef tagmap = mymap (itp0label, itp0instrlst)
-
 // abstype instr_stack
 // extern fun instr_stack_push (ins: itp0instrlst): void
 // extern fun instr_stack_push (ins: itp0instrlst): void
@@ -201,108 +204,109 @@ fun transform_inslst_loop1 (
   // ,
   // tagmap: !tagmap
   ): void =
-  case+ inss of
-  | list_nil () => (res := backto)
-  | list_cons (ins, inss2) =>
-    case+ ins.instr_node of
-    // made from ATSif, ATSthen, ATSelse
-    | ATSif (d0exp, instrlst, instrlstopt) => let
-      // exp for condition
-      val itp0exp = transform_exp (d0exp)
+case+ inss of
+| list_nil () => (res := backto)
+| list_cons (ins, inss2) =>
+  case+ ins.instr_node of
+  // made from ATSif, ATSthen, ATSelse
+  | ATSif (d0exp, instrlst, instrlstopt) => let
+    // exp for condition
+    val itp0exp = transform_exp (d0exp)
 
-      // rest of the instructions
-      var rest: ptr?
-      val () = transform_inslst_loop1 (inss2, rest, backto)
+    // rest of the instructions
+    var rest: ptr?
+    val () = transform_inslst_loop1 (inss2, rest, backto)
 
-      // ITP0INSredirect is always the last one in the list.
-      val backto2 = list_cons (ITP0INSredirect (rest), list_nil ())
+    // ITP0INSredirect is always the last one in the list.
+    val backto2 = list_cons (ITP0INSredirect (rest), list_nil ())
 
-      var inssthen: ptr?
-      val () = transform_inslst_loop1 (instrlst, inssthen, backto2)
+    var inssthen: ptr?
+    val () = transform_inslst_loop1 (instrlst, inssthen, backto2)
 
-      val insselseopt = (
-        case+ instrlstopt of
-        | Some (insselse0) => let
-          var insselse: ptr?
-          val () = transform_inslst_loop1 (insselse0, insselse, backto2)
-        in
-          Some (insselse)
-        end
-        | None () => None ()
-      ): itp0instrlstopt
+    val insselseopt = (
+      case+ instrlstopt of
+      | Some (insselse0) => let
+        var insselse: ptr?
+        val () = transform_inslst_loop1 (insselse0, insselse, backto2)
+      in
+        Some (insselse)
+      end
+      | None () => None ()
+    ): itp0instrlstopt
 
-      val ins_ITP0if = ITP0INSif (itp0exp, inssthen, insselseopt)
-      val () = res := list_cons (ins_ITP0if, rest)
-    in end
-    // 
-    | ATSINSfgoto (label) => let
-      val itp0label = transform_label (label)
-      val ins = ITP0INSgoto (ref<itp0instrlst> (list_nil ()))  // to be updated later
-    in 
-      addone (res, ins, inss2, backto)
-    end
-    // label used for tail call optimization for a function
-    | ATSINSflab (label) => let
-      val itp0label = transform_label (label)
-      val ins = ITP0INSlabel (itp0label)
-    in 
-      addone (res, ins, inss2, backto)
-    end
-    // 
-    // created by ATSfunbody_beg() and ATSfunbody_end
-    | ATSfunbodyseq (inssbody) => let
-      val inssall = list_append<instr> (inssbody, inss2)
-    in
-      transform_inslst_loop1 (inssall, res, backto)
-    end
-    | ATSINSmove (i0de, d0exp) => let
-      val id = transform_i0de (i0de)
-      val exp = transform (d0exp)
-      val ins = ITP0INSmove (id, exp)
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | ATSINSmove_void (i0de, d0exp) => let
-      val exp = transform (d0exp)
-      val ins = ITP0INSmove_void (exp)
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | ATSreturn (i0de) => let
-      val id = transform_i0de (i0de)
-      val ins = ITP0return (id)
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | ATSreturn_void (i0de) => let
-      val ins = ITP0return_void ()
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | ATStailcalseq (inssbody) => let
-      val inssall = list_append<instr> (inssbody, inss2)
-    in
-      transform_inslst_loop1 (inssall, res, backto)
-    end
-    | ATSINSmove_tlcal (i0de, d0exp) => let
-      val id = transform_i0de (i0de)
-      val exp = transform_exp (d0exp)
-      val ins = ITP0INSmove (id, exp)
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | ATSINSargmove_tlcal (i0de_arg, i0de_apy) => let
-      val arg = transform_i0de (i0de_arg)
-      val apy = create_exp_from_i0de (i0de_apy)
-      val ins = ITP0INSmove (arg, apy)
-    in
-      addone (res, ins, inss2, backto)
-    end
-    | todo => let
-      val () = res := list_nil ()
-    in
-      $raise nosupport ("error in transforming instr")
-    end
+    val ins_ITP0if = ITP0INSif (itp0exp, inssthen, insselseopt)
+    val () = res := list_cons (ins_ITP0if, rest)
+  in end
+  // 
+  | ATSINSfgoto (label) => let
+    val itp0label = transform_label (label)
+    val ins = ITP0INSgoto (ref<itp0instrlst> (list_nil ()))  // to be updated later
+  in 
+    addone (res, ins, inss2, backto)
+  end
+  // label used for tail call optimization for a function
+  | ATSINSflab (label) => let
+    val itp0label = transform_label (label)
+    val ins = ITP0INSlabel (itp0label)
+  in 
+    addone (res, ins, inss2, backto)
+  end
+  // 
+  // created by ATSfunbody_beg() and ATSfunbody_end
+  | ATSfunbodyseq (inssbody) => let
+    val inssall = list_append<instr> (inssbody, inss2)
+  in
+    transform_inslst_loop1 (inssall, res, backto)
+  end
+  | ATSINSmove (i0de, d0exp) => let
+    val id = transform_i0de (i0de)
+    val exp = transform_exp (d0exp)
+    val ins = ITP0INSmove (id, exp)
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | ATSINSmove_void (i0de, d0exp) => let
+    val exp = transform_exp (d0exp)
+    val ins = ITP0INSmove_void (exp)
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | ATSreturn (i0de) => let
+    val id = transform_i0de (i0de)
+    val ins = ITP0return (id)
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | ATSreturn_void (i0de) => let
+    val ins = ITP0return_void ()
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | ATStailcalseq (inssbody) => let
+    val inssall = list_append<instr> (inssbody, inss2)
+  in
+    transform_inslst_loop1 (inssall, res, backto)
+  end
+  | ATSINSmove_tlcal (i0de, d0exp) => let
+    val id = transform_i0de (i0de)
+    val exp = transform_exp (d0exp)
+    val ins = ITP0INSmove (id, exp)
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | ATSINSargmove_tlcal (i0de_arg, i0de_apy) => let
+    val arg = transform_i0de (i0de_arg)
+    val apy = create_exp_from_i0de (i0de_apy)
+    val ins = ITP0INSmove (arg, apy)
+  in
+    addone (res, ins, inss2, backto)
+  end
+  | todo => let
+    val () = res := list_nil ()
+  in
+    $raise nosupport ("error in transforming instr")
+  end
+// end of transform_inslst_loop1
 
 and addone (res: &ptr? >> itp0instrlst,
             ins: itp0instr, 
@@ -314,9 +318,9 @@ and addone (res: &ptr? >> itp0instrlst,
   prval () = fold@ (res)
 in end
 
-    
+// Update the reference of ITP0INSgoto.
 extern fun transform_inslst_loop_lab (inss: itp0instrlst, tagmap: !tagmap): void
-// todo implement
+// todo implement it
 
 var res: ptr?
 val tagmap = mymap_new ()
@@ -326,9 +330,101 @@ val () = transform_inslst_loop_lab (res, tagmap)
 val () = mymap_destroy (tagmap)
 in
   res
+end  // end of transform_inslst
+
+(* *********** ************** *)
+
+fun itp0exp_from_D0Eide (i0de: i0de): itp0exp =
+  todo
+
+// fun transform_exp (e0: d0exp): itp0exp
+implement transform_exp (e0) = let
+  val node0 = e0.d0exp_node
+in
+  case+ node0 of
+  | D0Eide (i0de) => itp0exp_from_D0Eide (i0de)
+  | D0Elist (d0explst)
+    => $raise nosupport ("error in transforming D0Elist")
+  | D0Eappid (i0de, d0explst)
+    => $raise nosupport ("error in transforming D0Eappid")
+  | D0Eappexp (d0exp, d0explst)
+    => $raise nosupport ("error in transforming D0Eappexp")
+//
+  | ATSPMVint i0nt
+    => $raise nosupport ("error in transforming ATSPMVint")
+  | ATSPMVintrep i0nt
+    => $raise nosupport ("error in transforming ATSPMVintrep")
+  | ATSPMVbool v
+    => $raise nosupport ("error in transforming ATSPMVbool")
+  | ATSPMVfloat f0loat
+    => $raise nosupport ("error in transforming ATSPMVfloat")
+  | ATSPMVstring s0tring
+    => $raise nosupport ("error in transforming ATSPMVstring")
+//
+  | ATSPMVi0nt i0nt
+    => $raise nosupport ("error in transforming ATSPMVi0nt")
+  | ATSPMVf0loat f0loat
+    => $raise nosupport ("error in transforming ATSPMVf0loat")
+//
+  | ATSPMVempty (v) // void-value
+    => $raise nosupport ("error in transforming ATSPMVempty")
+  | ATSPMVextval (tokenlst) // external values
+    => $raise nosupport ("error in transforming ATSPMVextval")
+//
+  | ATSPMVrefarg0 (d0exp)
+    => $raise nosupport ("error in transforming ATSPMVrefarg0")
+  | ATSPMVrefarg1 (d0exp)
+    => $raise nosupport ("error in transforming ATSPMVrefarg1")
+//
+  | ATSPMVfunlab (label)
+    => $raise nosupport ("error in transforming ATSPMVfunlab")
+  | ATSPMVcfunlab (v(*knd*), label, d0explst)
+    => $raise nosupport ("error in transforming ATSPMVcfunlab")
+//
+  | ATSPMVcastfn (i0de(*fun*), s0exp, d0exp(*arg*))
+    => $raise nosupport ("error in transforming ATSPMVcastfn")
+//
+  | ATSCSTSPmyloc s0tring
+    => $raise nosupport ("error in transforming ATSCSTSPmyloc")
+//
+  | ATSCKpat_con0 (d0exp, v(*tag*))
+    => $raise nosupport ("error in transforming ATSCKpat_con0")
+  | ATSCKpat_con1 (d0exp, v(*tag*))
+    => $raise nosupport ("error in transforming ATSCKpat_con1")
+//
+  | ATSSELcon (d0exp, s0exp(*tysum*), i0de(*lab*))
+    => $raise nosupport ("error in transforming ATSSELcon")
+  | ATSSELrecsin (d0exp, s0exp(*tyrec*), i0de(*lab*))
+    => $raise nosupport ("error in transforming ATSSELrecsin")
+  | ATSSELboxrec (d0exp, s0exp(*tyrec*), i0de(*lab*))
+    => $raise nosupport ("error in transforming ATSSELboxrec")
+  | ATSSELfltrec (d0exp, s0exp(*tyrec*), i0de(*lab*))
+    => $raise nosupport ("error in transforming ATSSELfltrec")
+//
+  | ATSextfcall (i0de(*fun*), d0explst(*arg*))
+    => $raise nosupport ("error in transforming ATSextfcall")
+    // end of [ATSextfcall]
+  | ATSextmcall (d0exp(*obj*), d0exp(*method*), d0explst(*arg*))
+    => $raise nosupport ("error in transforming ATSextmcall")
+    // end of [ATSextmcall]
+//
+  | ATSfunclo_fun (d0exp, s0exp(*arg*), s0exp(*res*))
+    => $raise nosupport ("error in transforming ATSfunclo_fun")
+  | ATSfunclo_clo (d0exp, s0exp(*arg*), s0exp(*res*))
+    => $raise nosupport ("error in transforming ATSfunclo_clo")
+
+//  | todo => $raise nosupport ("error in transforming error")
+
 end
 
-// end of transform_inslst_loop1
+////
+abstype xx = ptr
+extern fun xx_create (): xx
+extern fun foo (xx, int): int
+symintr .foo
+overload .foo with foo
+val y = xx_create ()
+val _ = y.foo (3)
 
 
 

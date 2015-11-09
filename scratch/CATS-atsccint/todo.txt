@@ -1,0 +1,13 @@
+
+1.
+
+The concept of memory address is handed over to the C language semantics.
+But I still have to handle the concept of function address myself since the interpreter
+doesn't compile functions into machine code and save it into the memory.
+
+2.
+
+
+
+
+

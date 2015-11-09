@@ -1,4 +1,12 @@
 
+(*
+*
+* The file contains data structures used to define a program.
+*
+*
+*
+*
+*)
 
 #include "share/atspre_define.hats"
 #include "share/atspre_staload.hats"
@@ -12,7 +20,8 @@ staload "./atsccint_basics.sats"
 staload "./atsccint_types.sats"
 
 datatype itp0exp =
-| TODO
+| ITP0EXPid of (itp0id)
+| todo
 
 
 datatype itp0value_node =
@@ -27,7 +36,9 @@ itp0value = '{
 datatype itp0instr_node =
 | ITP0INSif of (itp0exp, itp0instrlst, itp0instrlstopt)
 | ITP0INSgoto of (ref itp0instrlst)
-| ITP0INSredirect of (itp0instrlst)  // This must be the last of the list.
+// This must be the last of the instruction list.
+// The instruction is formed from "if" instruction
+| ITP0INSredirect of (itp0instrlst)
 | ITP0INSlabel of (itp0label)
 | ITP0INSmove of (itp0id, itp0exp)
 | ITP0INSmove_void of (itp0exp)
