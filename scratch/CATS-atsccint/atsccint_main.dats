@@ -32,6 +32,8 @@ staload "{$CATSPARSEMIT}/catsparse_parsing.sats"
 //
 staload "{$CATSPARSEMIT}/catsparse_emit.sats"
 //
+staload "atsccint_emit_syntax.sats"
+//
 (* ****** ****** *)
 //
 val () =
@@ -56,6 +58,7 @@ catsparse_include_all_dynload(): void = "ext#"
 //
 (* ****** ****** *)
 
+dynload "./atsccint_emit_syntax.dats"
 // dynload "./atscc2js_emit.dats"
 // dynload "./atscc2js_emit2.dats"
 // dynload "./atsccint_interpreter.dats"
@@ -104,6 +107,7 @@ cmdstate = @{
 , ninputfile= int // waiting for STDIN if it is 0
 , outchan= OUTCHAN // current output channel
 , nerror= int // number of accumulated errors
+, psyntax=bool  // needs to print syntax
 } (* end of [cmdstate] *)
 
 (* ****** ****** *)
@@ -138,7 +142,6 @@ atsccint_fileref
 implement
 atsccint_fileref
   (state, inp) = let
-//
 val oc = state.outchan
 val out = outchan_get_fileref (oc)
 //
@@ -146,7 +149,8 @@ val d0cs = parse_from_fileref (inp)
 //
 // val () = emit_time_stamp (out)
 //
-val ((*void*)) = fprint_d0eclist (out, d0cs)
+// val ((*void*)) = fprint_d0eclist (out, d0cs)
+val () = emit_d0eclist (out, d0cs, 0)
 // //
 // val () =
 // emit_text (out, "\n/* ****** ****** */\n")
@@ -417,6 +421,10 @@ case+ key of
 | "-o" => {
     val () = state.waitkind := WTKoutput ()
   } (* end of [-o] *)
+| "-p" => {
+    val () = println! ("processing -p")
+    val () = state.psyntax := true
+  } (* end of [-p] *)
 //
 | "-h" => {
     val () = atsccint_usage ("atsccint")
@@ -564,6 +572,7 @@ state = @{
 , ninputfile= ~1 // input files
 , outchan= OUTCHANref (stdout_ref)
 , nerror= 0 // number of accumulated errors
+, psyntax=false
 } : cmdstate // end of [var]
 //
 val () = process_cmdline (state, arglst)

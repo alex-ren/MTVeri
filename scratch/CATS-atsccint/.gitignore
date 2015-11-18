@@ -1,2 +1,7 @@
 /tags_c
 /tags_cats
+/out
+/.idea
+/*.iml
+/syntax_codegen2.hats
+

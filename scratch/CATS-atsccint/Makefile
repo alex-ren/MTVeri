@@ -15,6 +15,9 @@ PATSOPT=$(PATSHOME)/bin/patsopt
 
 all::
 
+all:: \
+    syntax_codegen2.hats
+
 ######
 
 CATSPARSEMIT=./.CATS-parsemit
@@ -28,6 +31,7 @@ SOURCES_DATS :=
 SOURCES_DATS += atsccint_main.dats
 # SOURCES_DATS += atsccint_emit.dats
 # SOURCES_DATS += atsccint_emit2.dats
+SOURCES_DATS += atsccint_emit_syntax.dats
 
 SOURCES_SATS :=
 SOURCES_SATS += $(CATSPARSEMIT)/catsparse.sats
@@ -36,6 +40,7 @@ SOURCES_SATS += atsccint_types.sats
 SOURCES_SATS += atsccint_program.sats
 SOURCES_SATS += atsccint_transform.sats
 SOURCES_SATS += atsccint_interpreter.sats
+SOURCES_SATS += atsccint_emit_syntax.sats
 
 SOURCES_CATS :=
 SOURCES_CATS += $(CATSPARSEMIT)/catsparse_mylib_dats.c
@@ -68,6 +73,11 @@ $(CPF) $(CATSPARSEMIT_source)/SATS/catsparse_*.sats $(CATSPARSEMIT)/.
 pkgreloc:: ; \
 $(CPF) $(CATSPARSEMIT_source)/CATS/catsparse_*_dats.c $(CATSPARSEMIT)/.
 #
+
+syntax_codegen2.hats: \
+$(CATSPARSEMIT_source)/SATS/catsparse.sats atsccint_emit_syntax.dats; \
+$(PATSOPT) -DATS CODEGEN2 --codegen-2 -o $@ -d atsccint_emit_syntax.dats
+
 ######
 #
 build:: pkgreloc

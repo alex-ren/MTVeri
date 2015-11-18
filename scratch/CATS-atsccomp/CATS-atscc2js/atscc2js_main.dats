@@ -142,7 +142,9 @@ atscc2js_fileref
 val oc = state.outchan
 val out = outchan_get_fileref (oc)
 //
+val () = println! "before parse_from_fileref"
 val d0cs = parse_from_fileref (inp)
+val () = println! "after parse_from_fileref"
 //
 val () = emit_time_stamp (out)
 //
@@ -300,6 +302,9 @@ val () =
 println! ("  --output <filename> : output into <filename>")
 //
 val () =
+println! ("  -p  : for printing syntax tree")
+//
+val () =
 println! ("  -h : for printing out this help usage")
 val () =
 println! ("  --help : for printing out this help usage")
@@ -313,6 +318,7 @@ process_cmdline
 (
   state: &cmdstate, arglst: comarglst
 ) : void = let
+val () = println! "process_cmdline"
 in
 //
 case+ arglst of
@@ -351,6 +357,7 @@ process_cmdline2
 (
   state: &cmdstate, arg: comarg, arglst: comarglst
 ) : void = let
+val () = println! "process_cmdline2"
 in
 //
 case+ arg of
@@ -365,6 +372,7 @@ case+ arg of
     | COMARGkey (2, key) when nif > 0 =>
         process_cmdline2_COMARGkey2 (state, arglst, key)
     | COMARGkey (_, fname) => let
+        val () = println! "process_cmdline2 COMARGkey"
         val () = state.ninputfile := nif + 1
         val () = atscc2js_basename (state, fname(*input*))
       in
@@ -404,6 +412,7 @@ process_cmdline2_COMARGkey1
 (
   state: &cmdstate >> _, arglst: comarglst, key: string
 ) : void = let
+val () = println! "process_cmdline2_COMARGkey1"
 //
 val () = (
 //
