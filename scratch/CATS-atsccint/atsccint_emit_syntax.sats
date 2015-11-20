@@ -57,6 +57,11 @@ fun emit_d0eclist: emit_type_list (d0eclist)
 fun emit_d0ecl: emit_type (d0ecl)
 fun emit_i0de: emit_type (i0de)
 fun emit_f0decl: emit_type (f0decl)
+fun emit_f0head: emit_type (f0head)
+fun emit_f0body: emit_type (f0body)
+fun emit_f0marg: emit_type (f0marg)
+fun emit_s0exp: emit_type (s0exp)
+fun emit_f0arg: emit_type (f0arg)
 
 
 fun token2string (tok: token): string

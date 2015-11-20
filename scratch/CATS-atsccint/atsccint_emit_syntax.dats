@@ -132,13 +132,11 @@ case node of
 //     ) (* end of [val] *)
 //   }
 // //
-// | D0Cdyncst_mac i0de => (
-//   // Just for comment. No special usage.
-//   emit_text (out, datcon_d0ecl_node node, level);
-//   emit0_text (out, "(");
-//   emit_i0de (out, i0de, 0);
-//   emit0_text_newline (out, ")")
-// )
+| D0Cdyncst_mac i0de => EUlist (
+  // Just for comment. No special usage.
+  emit_text (datcon_d0ecl_node node) ::
+  emit_lwrapper () :: emit_i0de (i0de) :: emit_rwrapper () :: nil
+)
 // //
 // | D0Cdyncst_extfun _ => ()
 // //
@@ -182,12 +180,14 @@ case node of
 //     ) (* end of [val] *)
 //   } (* end of [D0Cstatmp] *)
 // //
-// | D0Cfundecl (fk, f0d) => (
-//   emit_text_newline (out, (datcon_d0ecl_node node) + "(", level);
-//   emit_text_newline (out, fkind2string fk, level);
-//   emit_f0decl (out, f0d, level);
-//   emit_text_newline (out, ")", level)
-// )
+| D0Cfundecl (fk, f0d) => EUlist (
+  emit_text (datcon_d0ecl_node node) :: 
+  emit_newline () :: emit_lwrapper () :: emit_indent () ::
+    emit_newline () :: emit_text (fkind2string fk) :: emit_text (" ") ::
+    emit_f0decl (f0d) ::
+  emit_unindent () ::
+  emit_newline () :: emit_rwrapper () :: nil
+)
 // //
 // | D0Cclosurerize
 //     (fl, env, arg, res) =>
@@ -211,6 +211,7 @@ case node of
 end // end of [emit_d0ecl]
 
 
+
 implement emit_i0de (i0de) = let
   val name = symbol_get_name i0de.i0dex_sym
 in
@@ -223,10 +224,47 @@ in
   )
 end
 
-implement emit_f0decl (f0d) = 
-  emit_text ("todo")
+implement emit_f0decl (f0d) = let
+  val node = f0d.f0decl_node
+in
+  case+ node of
+  | F0DECLnone head => emit_f0head head
+  | F0DECLsome (head, body) => EUlist (
+    emit_f0head (head) :: emit_text (" ") :: emit_lwrapper () ::
+    emit_indent () :: emit_newline () ::
+    emit_f0body (body) :: 
+    emit_unindent () :: emit_newline () :: emit_rwrapper () :: nil
+  )
+end
 
+implement emit_f0head (f0head) = let
+  val node = f0head.f0head_node
+  val+ F0HEAD (i0de, f0marg, s0exp) = node
+in
+  EUlist (
+  emit_i0de (i0de) :: 
+  emit_text ("(") :: emit_f0marg (f0marg) :: emit_text (")") ::
+  emit_text (": ") :: emit_s0exp (s0exp) :: nil
+)
+end
 
+implement emit_f0body (f0body) = emit_text "f0body"
+
+implement emit_f0marg (f0marg) = let
+  val node = f0marg.f0marg_node
+  fun aux (args: f0arglst): eulist =
+  case+ args of
+  | nil () => nil ()
+  | arg :: args => emit_text (", ") :: (emit_f0arg arg) :: aux (args)
+in
+  case node of
+  | arg :: args => EUlist ((emit_f0arg arg) :: aux (args))
+  | nil () => EUlist (nil)
+end
+
+implement emit_s0exp (s0exp) = emit_text "s0exp"
+
+implement emit_f0arg (f0arg) = emit_text "f0arg"
 //
 //
 
