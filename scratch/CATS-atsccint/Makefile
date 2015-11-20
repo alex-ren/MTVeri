@@ -77,14 +77,18 @@ syntax_codegen2.hats: \
 $(CATSPARSEMIT_source)/SATS/catsparse.sats atsccint_emit_syntax.dats; \
 $(PATSOPT) -DATS CODEGEN2 --codegen-2 -o $@ -d atsccint_emit_syntax.dats
 
-all:: syntax_codegen2.hats
-
 ######
 #
-build:: pkgreloc
-build:: atsccint
+buildall:: 
+	make pkgreloc
+	make build
+
+build::
+	make syntax_codegen2.hats
+	make all
+
 #
-testall:: build
+testall:: buildall
 testall:: cleanall
 #
 ######
@@ -110,5 +114,7 @@ tags:
 
 
 CPF=cp -f
+
 include $(PATSHOME)/share/atsmake-post.mk
+
 
