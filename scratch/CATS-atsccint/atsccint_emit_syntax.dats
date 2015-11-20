@@ -14,6 +14,7 @@ staload
 UN = "prelude/SATS/unsafe.sats"
 //
 (* ****** ****** *)
+staload "./aux_lib.sats"
 //
 #define
 CATSPARSEMIT_targetloc "./.CATS-parsemit"
@@ -23,48 +24,98 @@ staload "{$CATSPARSEMIT}/catsparse.sats"
 staload "./atsccint_emit_syntax.sats"
 //
 #codegen2("datcon", d0ecl_node)
+#codegen2("datcon", token_node)
+#codegen2("datcon", fkind_node)
 
 #ifdef
 CODEGEN2
 #then
 #else
 #include "syntax_codegen2.hats"
-//
-(* ****** ****** *)
+
 (* ****** ****** *)
 
-implement emit_d0eclist (out, d0cs, level) = let
-fun loop (out: FILEref, d0cs: d0eclist, level: int): void =
-case+ d0cs of
-| list_nil () => ()
-| list_cons (d0c, d0cs) => let
-  val () = emit_d0ecl (out, d0c, level)
+#define :: cons
+
+implement emit_text (text) = EUstring text
+
+implement emit_newline () = EUnewline
+
+implement emit_indent () = EUindent
+implement emit_unindent () = EUunindent
+implement emit_lwrapper () = EUlwrapper
+implement emit_rwrapper () = EUrwrapper
+
+fun fprint_indent (out: FILEref, level: int): void =
+if level > 0 then let
+  val () = fprint (out, "  ")
 in
-  loop (out, d0cs, level)
+  fprint_indent (out, level - 1)
 end
+
+implement fprint_emit_unit_list (out, eus) = let
+fun aux_level (out: FILEref, eus: eulist, level: int): void =
+case+ eus of
+| nil () => ()
+| eu :: eus =>
+  case+ eu of
+  | EUindent () => aux_level (out, eus, level + 1)
+  | EUunindent () => aux_level (out, eus, level - 1)
+  | EUlwrapper () => (fprint (out, "("); aux_level (out, eus, level))
+  | EUrwrapper () => (fprint (out, ")"); aux_level (out, eus, level))
+  | EUnewline () => (fprint (out, "\n");
+                    fprint_indent (out, level);
+                    aux_level (out, eus, level)
+                    )
+  | EUstring (text) => (fprint (out, text); aux_level (out, eus, level))
+  | EUlist (eus0) => (aux_level (out, eus0, level);
+                     aux_level (out, eus, level)
+                     )
 in
-  loop (out, d0cs, level)
+  aux_level (out, eus, 0)
+end
+
+(* ****** ****** *)
+
+implement emit_d0eclist (d0cs) = let
+  fun loop (d0cs: d0eclist): eulist =
+  case+ d0cs of
+  | list_nil () => nil 
+  | list_cons (d0c, d0cs) => let
+    val eu = emit_d0ecl d0c
+    val eus = emit_d0eclist (d0cs)
+  in
+    eu :: emit_newline () :: eus
+  end
+in
+  loop (d0cs)
 end
   
-
 implement
 emit_d0ecl
-  (out, d0c, level) = let
+  (d0c) = let
   val node = d0c.d0ecl_node
 in
 //
 case node of
 //
-| D0Cinclude s0tring => (
-  emit_indent (out, level);
-  emit_text (out, datcon_d0ecl_node node);
-  emit_text (out, "(");
-  emit_text (out, token2string (s0tring));
-  emit_text (out, ")\n")
+| D0Cinclude s0tring => EUlist (
+  emit_text (datcon_d0ecl_node node) :: 
+  emit_lwrapper () ::
+  emit_text (token2string (s0tring)) ::
+  emit_rwrapper () :: nil
 )
-| _ => ()
-//
-// | D0Cifdef _ => ()
+| D0Cifdef (i0de, d0ecs) => EUlist (
+  emit_text (datcon_d0ecl_node node) ::
+  emit_lwrapper () :: emit_i0de (i0de) :: emit_rwrapper () :: emit_newline () ::
+  emit_lwrapper () :: 
+  emit_indent () ::
+  emit_newline () ::
+  EUlist (emit_d0eclist (d0ecs)) ::
+  emit_unindent () ::
+  emit_newline () ::
+  emit_rwrapper () :: nil
+)
 // | D0Cifndef _ => ()
 // //
 // | D0Ctypedef (id, def) =>
@@ -81,7 +132,13 @@ case node of
 //     ) (* end of [val] *)
 //   }
 // //
-// | D0Cdyncst_mac _ => ()
+// | D0Cdyncst_mac i0de => (
+//   // Just for comment. No special usage.
+//   emit_text (out, datcon_d0ecl_node node, level);
+//   emit0_text (out, "(");
+//   emit_i0de (out, i0de, 0);
+//   emit0_text_newline (out, ")")
+// )
 // //
 // | D0Cdyncst_extfun _ => ()
 // //
@@ -125,7 +182,12 @@ case node of
 //     ) (* end of [val] *)
 //   } (* end of [D0Cstatmp] *)
 // //
-// | D0Cfundecl (fk, f0d) => emit_f0decl (out, f0d)
+// | D0Cfundecl (fk, f0d) => (
+//   emit_text_newline (out, (datcon_d0ecl_node node) + "(", level);
+//   emit_text_newline (out, fkind2string fk, level);
+//   emit_f0decl (out, f0d, level);
+//   emit_text_newline (out, ")", level)
+// )
 // //
 // | D0Cclosurerize
 //     (fl, env, arg, res) =>
@@ -145,19 +207,45 @@ case node of
 //     emit_text (out, "var "); emit_tmpvar (out, flag); emit_text (out, " = 0;\n")
 //   ) (* end of [D0Cdynloadflag_minit] *)
 // //
+| _ => emit_text (datcon_d0ecl_node node)
 end // end of [emit_d0ecl]
 
-implement emit_text (out, text) = fprint_string (out, text)
 
-implement emit_indent (out, level) = if level > 0 then let
-  val () = emit_text (out, "  ")
+implement emit_i0de (i0de) = let
+  val name = symbol_get_name i0de.i0dex_sym
 in
-  emit_indent (out, level - 1)
+  EUlist (
+  emit_text ("i0de") ::
+  emit_lwrapper () ::
+  emit_text (name) ::
+  emit_rwrapper () ::
+  nil
+  )
 end
-else ()
 
-implement token2string (tok) =
-case- tok.token_node of
-| T_STRING (str) => str
+implement emit_f0decl (f0d) = 
+  emit_text ("todo")
 
+
+//
+//
+
+implement token2string (tok) = let
+  val node = tok.token_node
+  val node_str = datcon_token_node node
+  val str = (
+  case- node of
+  | T_STRING (str) => str
+  | T_IDENT_alp (str) => str
+  | _ => datcon_token_node tok.token_node
+  )
+in
+  node_str + "(" + str + ")"
+end
+
+implement fkind2string (fk) = datcon_fkind_node fk.fkind_node
+
+
+  
 #endif
+

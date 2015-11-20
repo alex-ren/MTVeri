@@ -59,6 +59,7 @@ catsparse_include_all_dynload(): void = "ext#"
 (* ****** ****** *)
 
 dynload "./atsccint_emit_syntax.dats"
+dynload "./aux_lib.dats"
 // dynload "./atscc2js_emit.dats"
 // dynload "./atscc2js_emit2.dats"
 // dynload "./atsccint_interpreter.dats"
@@ -150,7 +151,8 @@ val d0cs = parse_from_fileref (inp)
 // val () = emit_time_stamp (out)
 //
 // val ((*void*)) = fprint_d0eclist (out, d0cs)
-val () = emit_d0eclist (out, d0cs, 0)
+val eus = emit_d0eclist (d0cs)
+val () = fprint_emit_unit_list (out, eus)
 // //
 // val () =
 // emit_text (out, "\n/* ****** ****** */\n")

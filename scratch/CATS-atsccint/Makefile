@@ -15,9 +15,6 @@ PATSOPT=$(PATSHOME)/bin/patsopt
 
 all::
 
-all:: \
-    syntax_codegen2.hats
-
 ######
 
 CATSPARSEMIT=./.CATS-parsemit
@@ -32,6 +29,7 @@ SOURCES_DATS += atsccint_main.dats
 # SOURCES_DATS += atsccint_emit.dats
 # SOURCES_DATS += atsccint_emit2.dats
 SOURCES_DATS += atsccint_emit_syntax.dats
+SOURCES_DATS += aux_lib.dats
 
 SOURCES_SATS :=
 SOURCES_SATS += $(CATSPARSEMIT)/catsparse.sats
@@ -41,6 +39,7 @@ SOURCES_SATS += atsccint_program.sats
 SOURCES_SATS += atsccint_transform.sats
 SOURCES_SATS += atsccint_interpreter.sats
 SOURCES_SATS += atsccint_emit_syntax.sats
+SOURCES_SATS += aux_lib.sats
 
 SOURCES_CATS :=
 SOURCES_CATS += $(CATSPARSEMIT)/catsparse_mylib_dats.c
@@ -51,7 +50,7 @@ SOURCES_CATS += $(CATSPARSEMIT)/catsparse_include_all_dats.c
 all:: \
 atsccint
 atsccint: \
-$(SOURCES_DATS); \
+$(SOURCES_DATS) syntax_codegen2.hats; \
 $(PATSCC) \
   -DATS_MEMALLOC_GCBDW -O2 -o $@ \
   $(SOURCES_DATS) $(SOURCES_SATS) $(SOURCES_CATS) -lgc
@@ -96,6 +95,7 @@ clean:: ; $(RMF) *_?ats.c
 
 cleanall:: clean
 cleanall:: ; $(RMF) ./atsccint
+cleanall:: ; $(RMF) ./syntax_codegen2.hats
 cleanall:: ; $(RMF) ./.CATS-parsemit/*
 
 .PHONY: tags
