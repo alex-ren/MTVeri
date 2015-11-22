@@ -22,6 +22,7 @@ emit_unit =
 | EUrwrapper of ()
 | EUnewline of ()
 | EUstring of string
+| EUint of int
 | EUlist of eulist
 where
 eu = emit_unit
@@ -44,6 +45,7 @@ emit_type_list
 
 
 fun emit_text : emit_type (string)
+fun emit_int : emit_type (int)
 fun emit_newline (): eu
 fun emit_indent (): eu
 fun emit_unindent (): eu
@@ -62,6 +64,12 @@ fun emit_f0body: emit_type (f0body)
 fun emit_f0marg: emit_type (f0marg)
 fun emit_s0exp: emit_type (s0exp)
 fun emit_f0arg: emit_type (f0arg)
+fun emit_tmpdeclst: emit_type_list (tmpdeclst)
+fun emit_instrlst: emit_type_list (instrlst)
+fun emit_tmpdec: emit_type (tmpdec)
+fun emit_instr: emit_type (instr)
+fun emit_label: emit_type (label)
+fun emit_d0exp: emit_type (d0exp)
 
 
 fun token2string (tok: token): string
@@ -90,5 +98,6 @@ fun emit_SEMICOLON : FILEref -> void
 fun{} datcon_d0ecl_node : (d0ecl_node) -> string
 fun{} datcon_token_node : (token_node) -> string
 fun{} datcon_fkind_node : (fkind_node) -> string
+fun{} datcon_instr_node : (instr_node) -> string
 
 
