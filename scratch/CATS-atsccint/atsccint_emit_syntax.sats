@@ -70,6 +70,8 @@ fun emit_tmpdec: emit_type (tmpdec)
 fun emit_instr: emit_type (instr)
 fun emit_label: emit_type (label)
 fun emit_d0exp: emit_type (d0exp)
+fun emit_d0explst: emit_type_list (d0explst)
+fun emit_s0explst: emit_type_list (s0explst)
 
 
 fun token2string (tok: token): string
@@ -99,5 +101,7 @@ fun{} datcon_d0ecl_node : (d0ecl_node) -> string
 fun{} datcon_token_node : (token_node) -> string
 fun{} datcon_fkind_node : (fkind_node) -> string
 fun{} datcon_instr_node : (instr_node) -> string
+fun{} datcon_d0exp_node : (d0exp_node) -> string
+fun{} datcon_s0exp_node : (s0exp_node) -> string
 
 

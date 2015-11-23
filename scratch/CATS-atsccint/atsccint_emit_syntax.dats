@@ -27,6 +27,8 @@ staload "./atsccint_emit_syntax.sats"
 #codegen2("datcon", token_node)
 #codegen2("datcon", fkind_node)
 #codegen2("datcon", instr_node)
+#codegen2("datcon", d0exp_node)
+#codegen2("datcon", s0exp_node)
 
 #ifdef
 CODEGEN2
@@ -280,7 +282,19 @@ in
   | nil () => emit_text ("// f0marg")
 end
 
-implement emit_s0exp (s0exp) = emit_text "s0exp"  // todo
+implement emit_s0exp (s0exp) = let
+  val node = s0exp.s0exp_node
+  val datcon = datcon_s0exp_node node
+in
+  case+ node of
+  | S0Eide (sym) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+    emit_text (symbol_get_name (sym)) :: emit_rwrapper () :: nil)
+  | S0Elist (s0es) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+    EUlist (emit_s0explst (s0es)) :: emit_rwrapper () :: nil)
+  | S0Eappid (i0de, s0es) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+    emit_i0de (i0de) :: emit_rwrapper () :: emit_text ("(") ::
+    EUlist (emit_s0explst (s0es)) :: emit_text (")") :: nil)
+end
 
 implement emit_f0arg (f0arg) = let
   val node = f0arg.f0arg_node
@@ -623,8 +637,143 @@ case+ node of
 end  // end of [emit_instr]
 
 implement emit_label (label) = emit_i0de (label)
-implement emit_d0exp (d0e) = emit_text ("d0exp todo")
+implement emit_d0exp (d0e) = let
+  val node = d0e.d0exp_node
+  val datcon = datcon_d0exp_node node
+in
+case+
+d0e.d0exp_node of
+//
+| D0Eide (tmp) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+                  emit_i0de (tmp) :: emit_rwrapper () :: nil)
+//
+| D0Eappid (fid, d0es) => EUlist (
+  emit_text (datcon) :: emit_lwrapper () :: emit_i0de (fid) ::
+  emit_rwrapper () :: emit_text ("(") :: EUlist (emit_d0explst (d0es)) :: 
+  emit_text(")") :: nil)
+// | D0Eappexp (d0e, d0es) =>
+//   {
+//     val () = emit_d0exp (out, d0e)
+//     val () = emit_LPAREN (out)
+//     val () = emit_d0explst (out, d0es)
+//     val () = emit_RPAREN (out)
+//   }
+// //
+// | D0Elist (d0es) =>
+//   {
+//     val () = emit_text (out, "D0Elist")
+//     val () = emit_LPAREN (out)
+//     val () = emit_d0explst (out, d0es)
+//     val () = emit_RPAREN (out)
+//   }
+// //
+// | ATSPMVint (int) => emit_PMVint (out, int)
+// | ATSPMVintrep (int) => emit_PMVintrep (out, int)
+// //
+// | ATSPMVbool (tfv) => emit_PMVbool (out, tfv)
+// //
+// | ATSPMVfloat (flt) => emit_PMVfloat (out, flt)
+// //
+// | ATSPMVstring (str) => emit_PMVstring (out, str)
+// //
+| ATSPMVi0nt (int) => EUlist (
+  emit_text (datcon) :: emit_lwrapper () :: 
+  emit_text (token2string int) :: 
+  emit_rwrapper () :: nil)
+// //
+| ATSPMVempty (dummy) => EUlist (
+  emit_text (datcon) :: emit_lwrapper () :: emit_int (dummy) ::
+  emit_rwrapper () :: nil)
+// | ATSPMVextval (toklst) => emit_PMVextval (out, toklst)
+// //
+// | ATSPMVrefarg0 (d0e) => emit_d0exp (out, d0e)
+// | ATSPMVrefarg1 (d0e) => emit_d0exp (out, d0e)
+// //
+// | ATSPMVfunlab (fl) => emit_PMVfunlab (out, fl)
+// | ATSPMVcfunlab
+//     (_(*knd*), fl, d0es) => emit_PMVcfunlab (out, fl, d0es)
+//   // end of [ATSPMVcfunlab]
+// //
+// | ATSPMVcastfn
+//     (_(*fid*), _(*s0e*), arg) => emit_d0exp (out, arg)
+// //
+// | ATSCSTSPmyloc (tok) => emit_CSTSPmyloc (out, tok)
+// //
+| ATSCKiseqz(d0e) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+  emit_d0exp (d0e) :: emit_rwrapper () :: nil)
+| ATSCKisneqz(d0e) => EUlist (emit_text (datcon) :: emit_lwrapper () ::
+  emit_d0exp (d0e) :: emit_rwrapper () :: nil)
+// | ATSCKptriscons(d0e) => emit_ATSCKptriscons (out, d0e)
+// | ATSCKptrisnull(d0e) => emit_ATSCKptrisnull (out, d0e)
+// //
+// | ATSCKpat_int
+//     (d0e, int) => emit_ATSCKpat_int (out, d0e, int)
+// | ATSCKpat_bool
+//     (d0e, bool) => emit_ATSCKpat_bool (out, d0e, bool)
+// | ATSCKpat_string
+//     (d0e, string) => emit_ATSCKpat_bool (out, d0e, string)
+// //
+// | ATSCKpat_con0
+//     (d0e, ctag) => emit_ATSCKpat_con0 (out, d0e, ctag)
+// | ATSCKpat_con1
+//     (d0e, ctag) => emit_ATSCKpat_con1 (out, d0e, ctag)
+// //
+// | ATSSELcon _ => emit_SELcon (out, d0e0)
+// | ATSSELrecsin _ => emit_SELrecsin (out, d0e0)
+// | ATSSELboxrec _ => emit_SELboxrec (out, d0e0)
+// | ATSSELfltrec _ => emit_text (out, "ATSSELfltrec(...)")
+// //
+// | ATSextfcall
+//     (_fun, _arg) => {
+//     val () = emit_i0de (out, _fun)
+//     val () = emit_d0exparg (out, _arg)
+//   } (* end of [ATSextfcall] *)
+// | ATSextmcall
+//     (_obj, _mtd, _arg) => {
+// //
+//     val () = emit_d0exp (out, _obj)
+//     val () = emit_DOT (out)
+//     val () = emit_d0exp (out, _mtd)
+// //
+//     val () = emit_d0exparg (out, _arg)
+// //
+//   } (* end of [ATSextmcall] *)
+// //
+// | ATSfunclo_fun
+//     (d0e, _(*arg*), _(*res*)) => emit_d0exp (out, d0e)
+// | ATSfunclo_clo
+//     (d0e, _(*arg*), _(*res*)) =>
+//   (
+//     emit_d0exp (out, d0e);
+//     emit_LBRACKET (out); emit_int (out, 0); emit_RBRACKET (out)
+//   ) (* end of [ATSfunclo_clo] *)
+| _ => EUlist (emit_text (datcon) :: emit_text (" todo") :: nil)
+// //
+end // end of [emit_d0exp]
 
+implement emit_d0explst (d0es) = let
+  fun aux (d0es: d0explst): eulist =
+  case+ d0es of
+  | nil () => nil ()
+  | d0e :: d0es => emit_text (", ") :: emit_d0exp (d0e) :: aux (d0es)
+
+in
+case+ d0es of
+| nil () => nil
+| d0e :: d0es => emit_d0exp (d0e) :: aux (d0es)
+end
+
+implement emit_s0explst (s0es) = let
+  fun aux (s0es: s0explst): eulist =
+  case+ s0es of
+  | nil () => nil ()
+  | s0e :: s0es => emit_text (", ") :: emit_s0exp (s0e) :: aux (s0es)
+
+in
+case+ s0es of
+| nil () => nil
+| s0e :: s0es => emit_s0exp (s0e) :: aux (s0es)
+end
 //
 //
 
@@ -635,11 +784,12 @@ implement token2string (tok) = let
   case- node of
   | T_STRING (str) => str
   | T_IDENT_alp (str) => str
-  | _ => datcon_token_node tok.token_node
+  | T_INT (base, rep) => tostring_int (base) + ", " + rep
+  | _ => "todo"
   )
 in
   node_str + "(" + str + ")"
-end
+end  // end of [token2string]
 
 implement fkind2string (fk) = datcon_fkind_node fk.fkind_node
 
