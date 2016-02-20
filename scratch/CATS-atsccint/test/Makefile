@@ -1,16 +1,34 @@
 
+
+MYTARGET=MYTARGET
+include $(PATSHOME)/share/atsmake-pre.mk
+
+
 RMF = rm -rf
 
-test01_dats.c: test01.dats
-	patsopt -o $@ -d $< 
+ATSCCINT=../atsccint
 
-test02_dats.c: test02.dats
-	patsopt -o $@ -d $< 
+SOURCES_DATS :=
+SOURCES_DATS += test01.dats
+SOURCES_DATS += test02.dats
 
-test03_dats.c: test03.dats
-	patsopt -o $@ -d $< 
+SOURCES_DATS_C := \
+  $(patsubst %.dats, %_dats.c, $(SOURCES_DATS))
 
-cleanc:
-	$(RMF) *_dats.c
+SOURCES_DATS_S := \
+  $(patsubst %.dats, %_dats.s, $(SOURCES_DATS))
 
+.PRECIOUS: $(SOURCES_DATS_C)
+
+all:: $(SOURCES_DATS_S)
+
+%_dats.c: %.dats
+	$(PATSOPT) -o $@ -d $<
+
+%_dats.s: %_dats.c
+	$(ATSCCINT) -o $@ -p -i $<
+
+clean:
+	$(RMF) $(SOURCES_DATS_C)
+	$(RMF) $(SOURCES_DATS_S)
 
