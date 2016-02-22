@@ -1,0 +1,22 @@
+package org.ats_lang.postiats.mtv.utils;
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Log {
+    public static final Logger log4j = LogManager.getLogger(Log.class
+            .getName());
+    
+    public static void test() {
+        log4j.trace("This is a trace message."); 
+        log4j.debug("This is  a debug message."); 
+        log4j.info("This is an info message."); 
+        log4j.error("This is an error message");
+    }
+    
+    public static String getFilePos() {
+        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+        return trace.getFileName() + " @ " + trace.getLineNumber();
+    }
+}
