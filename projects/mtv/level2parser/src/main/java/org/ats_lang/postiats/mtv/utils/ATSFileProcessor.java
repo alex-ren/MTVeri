@@ -89,6 +89,10 @@ public class ATSFileProcessor {
 		return 0;
 	}
 
+	public File getPathLevel2Json() {
+		return m_pathLevel2Json;
+	}
+
 	private static String readFromProcess(InputStream is) throws IOException {
 		String line = null;
 		String lines = "";
