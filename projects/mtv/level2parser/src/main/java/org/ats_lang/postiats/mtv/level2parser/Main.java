@@ -82,7 +82,7 @@ public class Main {
                 FileReader fReader = new FileReader(atsFile.getPathLevel2Json());
                 System.out.println("== Parsing JSON start ==========================");
                 PostiatsLevel2ParserJson level2Parser = new PostiatsLevel2ParserJson();
-                // ProgramStfpl2 prog2 = level2Parser.trans(fReader);
+                // PostiatsProgram prog2 = level2Parser.trans(fReader);
                 System.out.println("== Parsing JSON end   ==========================");
             }
 
