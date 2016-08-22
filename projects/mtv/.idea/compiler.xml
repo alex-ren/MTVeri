@@ -25,9 +25,9 @@
         <module name="level2parser" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="level2parser" target="1.6" />
-      <module name="mtv" target="1.6" />
+    <bytecodeTargetLevel target="1.7">
+      <module name="level2parser" target="1.5" />
+      <module name="mtv" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

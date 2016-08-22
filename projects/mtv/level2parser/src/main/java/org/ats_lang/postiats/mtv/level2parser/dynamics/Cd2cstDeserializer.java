@@ -2,7 +2,7 @@ package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
 import org.ats_lang.postiats.mtv.level2parser.Cstamp;
 import org.ats_lang.postiats.mtv.level2parser.Csymbol;
-// todo import org.ats_lang.postiats.mtv.level2parser.ccomp.DefaultLibraryTypes;
+import org.ats_lang.postiats.mtv.ccomp.DefaultLibraryTypes;
 import org.ats_lang.postiats.mtv.level2parser.statics.Cs2exp;
 import org.ats_lang.postiats.mtv.level2parser.statics.SExpTypeExtractor;
 import org.ats_lang.postiats.mtv.simpletypes.ISType;
@@ -20,13 +20,12 @@ import com.google.gson.JsonParseException;
 public class Cd2cstDeserializer implements JsonDeserializer<Cd2cst> {
     
     private Map<Cstamp, Cd2cst> m_map;
-    // todo private DefaultLibraryTypes m_fac;
+    private DefaultLibraryTypes m_fac;
 
-    // todo
-    // public Cd2cstDeserializer(DefaultLibraryTypes fac) {
-    //     m_map = new HashMap<Cstamp, Cd2cst>();
-    //     m_fac = fac;
-    // }
+    public Cd2cstDeserializer(DefaultLibraryTypes fac) {
+        m_map = new HashMap<Cstamp, Cd2cst>();
+        m_fac = fac;
+    }
 
     @Override
     public Cd2cst deserialize(JsonElement json, Type typeOfT,
@@ -56,15 +55,13 @@ public class Cd2cstDeserializer implements JsonDeserializer<Cd2cst> {
 //                return d2cst;
 //            	
 //            }
-            // todo
-            // ISType stype = SExpTypeExtractor.extractType(type);
-            // if (null == stype) {
-            //     stype = m_fac.queryType(symbol);
-            // }
+            ISType stype = SExpTypeExtractor.extractType(type);
+            if (null == stype) {
+                stype = m_fac.queryType(symbol);
+            }
 
-            // todo
-            // d2cst = new Cd2cst(stamp, type, symbol, stype);
-            // m_map.put(stamp, d2cst);
+            d2cst = new Cd2cst(stamp, type, symbol, stype);
+            m_map.put(stamp, d2cst);
             return d2cst;
         } 
     }

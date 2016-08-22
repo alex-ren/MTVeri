@@ -1,7 +1,7 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.csharptype.ICSType;
-import jats.utfpl.stfpl.staexp.Ifunclo;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSType;
+import org.ats_lang.postiats.mtv.level2parser.statics.Ifunclo;
 
 import java.net.URL;
 import java.util.List;

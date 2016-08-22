@@ -1,7 +1,7 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
-import org.ats_lang.postiats.mtv.Ilabel;
 
+import org.ats_lang.postiats.mtv.level2parser.Ilabel;
 
 /*
  * The object of this class represents an item in the record.

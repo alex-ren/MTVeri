@@ -1,7 +1,7 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
 import org.ats_lang.postiats.mtv.level2parser.Csymbol;
-// todo import org.ats_lang.postiats.mtv.ccomp.DefaultLibraryTypes;
+import org.ats_lang.postiats.mtv.ccomp.DefaultLibraryTypes;
 import org.ats_lang.postiats.mtv.simpletypes.ISType;
 
 import java.lang.reflect.Type;
@@ -18,13 +18,12 @@ public class Cd2symDeserializer implements JsonDeserializer<Cd2sym> {
 
     private Map<String, Cd2sym> m_map;
     
-    // todo private DefaultLibraryTypes m_fac;
+    private DefaultLibraryTypes m_fac;
 
-    // todo
-    // public Cd2symDeserializer(DefaultLibraryTypes fac) {
-    //     m_map = new HashMap<String, Cd2sym>();
-    //     m_fac = fac;
-    // }
+    public Cd2symDeserializer(DefaultLibraryTypes fac) {
+        m_map = new HashMap<String, Cd2sym>();
+        m_fac = fac;
+    }
     
     @Override
     public Cd2sym deserialize(JsonElement json, Type typeOfT,
@@ -38,12 +37,10 @@ public class Cd2symDeserializer implements JsonDeserializer<Cd2sym> {
         if (null != d2sym) {
             return d2sym;
         } else {
-            // todo
-            return null;
-            // ISType stype = m_fac.queryType(sym);
-            // Cd2sym ret = new Cd2sym(sym, stype);
-            // m_map.put(sym.m_str, ret);
-            // return ret;
+            ISType stype = m_fac.queryType(sym);
+            Cd2sym ret = new Cd2sym(sym, stype);
+            m_map.put(sym.m_str, ret);
+            return ret;
         }
     }
 }

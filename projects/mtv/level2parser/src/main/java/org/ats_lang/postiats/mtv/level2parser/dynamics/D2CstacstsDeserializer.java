@@ -1,7 +1,7 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
 import org.ats_lang.postiats.mtv.utils.JsonUtilities;
-import org.ats_lang.postiats.mtv.statics.Cs2cst;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2cst;
 
 import java.lang.reflect.Type;
 import java.util.List;

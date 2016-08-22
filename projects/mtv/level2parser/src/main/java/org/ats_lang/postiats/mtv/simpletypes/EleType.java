@@ -1,6 +1,7 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.utils.Log;
+
+import org.ats_lang.postiats.mtv.utils.Log;
 
 import java.util.Map;
 

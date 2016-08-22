@@ -1,8 +1,8 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.csharptype.CSIntType;
-import jats.utfpl.stfpl.csharptype.ICSTypeBooking;
-import jats.utfpl.stfpl.stype.AuxSType.ToCSTypeResult;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSIntType;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeBooking;
+import org.ats_lang.postiats.mtv.simpletypes.AuxSType.ToCSTypeResult;
 
 import java.util.Set;
 

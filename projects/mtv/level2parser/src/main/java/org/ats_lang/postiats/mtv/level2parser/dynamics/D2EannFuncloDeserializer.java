@@ -1,6 +1,6 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
-import org.ats_lang.postiats.mtv.statics.Ifunclo;
+import org.ats_lang.postiats.mtv.level2parser.statics.Ifunclo;
 
 import java.lang.reflect.Type;
 

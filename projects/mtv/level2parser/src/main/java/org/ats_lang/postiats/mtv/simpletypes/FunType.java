@@ -1,23 +1,23 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.csharptype.Aux;
-import jats.utfpl.stfpl.csharptype.CSFunType;
-import jats.utfpl.stfpl.csharptype.CSTBookingFun;
-import jats.utfpl.stfpl.csharptype.CSTNameId;
-import jats.utfpl.stfpl.csharptype.ICSType;
-import jats.utfpl.stfpl.csharptype.ICSTypeBooking;
-import jats.utfpl.stfpl.csharptype.ICSTypeName;
-import jats.utfpl.stfpl.staexp.FUNCLOclo;
-import jats.utfpl.stfpl.staexp.FunCloNA;
-import jats.utfpl.stfpl.staexp.Ifunclo;
-import jats.utfpl.stfpl.stype.AuxSType.ToCSTypeResult;
-import jats.utfpl.utils.Log;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.Aux;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSFunType;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSTBookingFun;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSTNameId;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSType;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeBooking;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeName;
+import org.ats_lang.postiats.mtv.level2parser.statics.FUNCLOclo;
+import org.ats_lang.postiats.mtv.level2parser.statics.FunCloNA;
+import org.ats_lang.postiats.mtv.level2parser.statics.Ifunclo;
+import org.ats_lang.postiats.mtv.simpletypes.AuxSType.ToCSTypeResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ats_lang.postiats.mtv.utils.Log;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -88,7 +88,7 @@ public class FunType extends BoxedType {
             return new TypeCheckResult();
         } else if (right0 instanceof FunType) {
             FunType right = (FunType)right0;
-            jats.utfpl.stfpl.stype.AuxSType.matchTypeList(left.m_args, right.m_args);
+            org.ats_lang.postiats.mtv.simpletypes.AuxSType.matchTypeList(left.m_args, right.m_args);
             m_res.match(right.m_res);
             
             if (-999 == m_npf) {

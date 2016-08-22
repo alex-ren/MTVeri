@@ -1,21 +1,21 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.Ilabel;
-import jats.utfpl.stfpl.LABint;
-import jats.utfpl.stfpl.csharptype.Aux;
-import jats.utfpl.stfpl.csharptype.CSClassType;
-import jats.utfpl.stfpl.csharptype.CSTBookingRecord;
-import jats.utfpl.stfpl.csharptype.CSTNameId;
-import jats.utfpl.stfpl.csharptype.ICSTypeBooking;
-import jats.utfpl.stfpl.csharptype.ICSTypeName;
-import jats.utfpl.stfpl.stype.AuxSType.ToCSTypeResult;
-import jats.utfpl.utils.Log;
+import org.ats_lang.postiats.mtv.level2parser.Ilabel;
+import org.ats_lang.postiats.mtv.level2parser.LABint;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.Aux;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSClassType;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSTBookingRecord;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.CSTNameId;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeBooking;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeName;
+import org.ats_lang.postiats.mtv.simpletypes.AuxSType.ToCSTypeResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ats_lang.postiats.mtv.utils.Log;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 

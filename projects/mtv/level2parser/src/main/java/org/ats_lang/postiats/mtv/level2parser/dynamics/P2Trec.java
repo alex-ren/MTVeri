@@ -2,7 +2,8 @@ package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
 
 
-import org.ats_lang.postiats.mtv.LABint;
+
+import org.ats_lang.postiats.mtv.level2parser.LABint;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
-import org.ats_lang.postiats.mtv.statics.Cs2exp;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2exp;
 
 public class P2Tann implements Ip2at_node {
     public Cp2at m_p2t;

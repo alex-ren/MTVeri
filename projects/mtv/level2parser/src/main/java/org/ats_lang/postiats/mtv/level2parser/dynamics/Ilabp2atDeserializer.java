@@ -1,7 +1,6 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
 
-import org.ats_lang.postiats.mtv.Ilabel;
 
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -14,6 +13,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.ats_lang.postiats.mtv.level2parser.Ilabel;
 
 public class Ilabp2atDeserializer implements JsonDeserializer<Ilabp2at> {
 

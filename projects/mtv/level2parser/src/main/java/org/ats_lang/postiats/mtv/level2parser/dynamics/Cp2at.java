@@ -1,6 +1,6 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
-import org.ats_lang.postiats.mtv.Cloc_t;
+import org.ats_lang.postiats.mtv.level2parser.Cloc_t;
 
 public class Cp2at {
 

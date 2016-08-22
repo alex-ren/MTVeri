@@ -1,0 +1,132 @@
+package org.ats_lang.postiats.mtv.ccomp;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.ats_lang.postiats.mtv.level2parser.Cstamp;
+import org.ats_lang.postiats.mtv.level2parser.Csymbol;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2var;
+import org.ats_lang.postiats.mtv.level2parser.statics.FUNCLOfun;
+import org.ats_lang.postiats.mtv.level2parser.statics.S2RTbas;
+import org.ats_lang.postiats.mtv.simpletypes.BoolType;
+import org.ats_lang.postiats.mtv.simpletypes.FunType;
+import org.ats_lang.postiats.mtv.simpletypes.ISType;
+import org.ats_lang.postiats.mtv.simpletypes.PolyParaType;
+import org.ats_lang.postiats.mtv.simpletypes.PolyType;
+import org.ats_lang.postiats.mtv.simpletypes.VoidType;
+
+public class DefaultLibraryTypes {
+    static private Map<String, ISType> m_map = new HashMap<String, ISType>();  // true_bool";
+    
+    
+    static {
+    	
+        m_map.put("true_bool", BoolType.cInstance);
+        m_map.put("false_bool", BoolType.cInstance);
+        
+        
+        
+        FunType main_type = new FunType(
+                -1/*no proof*/, 
+                new ArrayList<ISType>(), 
+                VoidType.cInstance,
+                FUNCLOfun.cInstance,
+                1 /*has effect*/);
+                
+        m_map.put("main_void_0", main_type);
+
+        
+    }
+    
+    private int m_count;
+    
+    public DefaultLibraryTypes() {
+    	m_count = 0;
+    }
+    
+    public PolyParaType createPolyParaType() {
+    	Csymbol sym_t0ype = new Csymbol("t@ype");
+    	S2RTbas srt = new S2RTbas(sym_t0ype);
+    	
+    	Csymbol sym = new Csymbol("ta");
+    	
+    	Cstamp stamp = new Cstamp(0, ++m_count);
+    	
+    	Cs2var s2var = new Cs2var(sym, stamp, srt);
+    	
+    	PolyParaType type = new PolyParaType(s2var);
+    	
+    	return type;
+    }
+    
+    public PolyType getType1p1() {
+    	List<ISType> paras = new ArrayList<ISType>();
+    	PolyParaType ty0 = createPolyParaType();
+    	paras.add(ty0);
+    	paras.add(ty0);
+    	
+    	FunType fun_type = new FunType(
+                -1/*no proof*/, 
+                paras, 
+                ty0,
+                FUNCLOfun.cInstance,
+                0 /*has no effect*/);
+    	
+    	List<PolyParaType> polys = new ArrayList<PolyParaType>();
+    	polys.add(ty0);
+    	
+        PolyType poly_type = new PolyType(polys, fun_type);
+        return poly_type;
+
+    }
+    
+
+	private ISType getCastVwtp1() {
+    	List<ISType> paras = new ArrayList<ISType>();
+    	PolyParaType from = createPolyParaType();
+    	paras.add(from);
+    	
+    	PolyParaType to = createPolyParaType();
+    	FunType fun_type = new FunType(
+                -1/*no proof*/, 
+                paras, 
+                to,
+                FUNCLOfun.cInstance,
+                0 /*has no effect*/);
+    	
+    	List<PolyParaType> polys1 = new ArrayList<PolyParaType>();
+    	polys1.add(from);
+        PolyType poly_type1 = new PolyType(polys1, fun_type);
+
+    	List<PolyParaType> polys2 = new ArrayList<PolyParaType>();
+    	polys2.add(to);
+    	PolyType poly_type2 = new PolyType(polys2, poly_type1);
+    	return poly_type2;    	
+    	
+    }
+    
+    // Return value can be null.
+    public ISType queryType(Csymbol sym) {
+    	ISType type = m_map.get(sym.m_str);
+    	if (null != type) {
+    		return type;
+    	}
+    	
+    	if (sym.equals("+") || 
+    		sym.equals("-") ||
+    		sym.equals("*") ||
+    		sym.equals("/")) {
+    		return getType1p1();
+    	} 
+//    	else if (sym.equals("castvwtp1")) {
+//    		return getCastVwtp1();
+//    	}
+    	
+    	return null;
+    }
+
+}
+
+

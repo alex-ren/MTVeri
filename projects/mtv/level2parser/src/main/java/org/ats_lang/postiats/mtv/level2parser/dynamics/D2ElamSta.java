@@ -1,7 +1,7 @@
 package org.ats_lang.postiats.mtv.level2parser.dynamics;
 
-import org.ats_lang.postiats.mtv.statics.Cs2exp;
-import org.ats_lang.postiats.mtv.statics.Cs2var;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2exp;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2var;
 import org.ats_lang.postiats.mtv.simpletypes.ISType;
 
 import java.util.List;

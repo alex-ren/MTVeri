@@ -1,13 +1,13 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.csharptype.ICSTypeBooking;
-import jats.utfpl.stfpl.staexp.Cs2cst;
-import jats.utfpl.stfpl.stype.AuxSType.ToCSTypeResult;
-import jats.utfpl.utils.Log;
+import org.ats_lang.postiats.mtv.level2parser.statics.Cs2cst;
+import org.ats_lang.postiats.mtv.levelcsharp.csharptypes.ICSTypeBooking;
+import org.ats_lang.postiats.mtv.simpletypes.AuxSType.ToCSTypeResult;
 
 import java.util.Map;
 import java.util.Set;
 
+import org.ats_lang.postiats.mtv.utils.Log;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 

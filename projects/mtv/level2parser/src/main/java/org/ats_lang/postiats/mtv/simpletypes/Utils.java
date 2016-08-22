@@ -1,6 +1,6 @@
 package org.ats_lang.postiats.mtv.simpletypes;
 
-import jats.utfpl.stfpl.staexp.Ifunclo;
+import org.ats_lang.postiats.mtv.level2parser.statics.Ifunclo;
 
 public class Utils {
     static public Ifunclo getCloInfo(ISType type) {
