@@ -1,5 +1,6 @@
 package org.ats_lang.postiats.mtv.level2parser;
 
+import org.ats_lang.postiats.mtv.level2parser.dynamics.PostiatsProgram;
 import org.ats_lang.postiats.mtv.utils.ATSFileProcessor;
 import org.ats_lang.postiats.mtv.utils.FilenameUtils;
 import org.ats_lang.postiats.mtv.utils.Log;
@@ -82,7 +83,7 @@ public class Main {
                 FileReader fReader = new FileReader(atsFile.getPathLevel2Json());
                 System.out.println("== Parsing JSON start ==========================");
                 PostiatsLevel2ParserJson level2Parser = new PostiatsLevel2ParserJson();
-                // PostiatsProgram prog2 = level2Parser.trans(fReader);
+                PostiatsProgram prog2 = level2Parser.trans(fReader);
                 System.out.println("== Parsing JSON end   ==========================");
             }
 

@@ -89,9 +89,15 @@ public class PostiatsLevel2ParserJson {
 
         /* *********** dynamics *********** */
 
-        gsonBuilder.registerTypeAdapter(Cd2cst.class, new Cd2cstDeserializer(type_fac));
-        gsonBuilder.registerTypeAdapter(Cd2var.class, new Cd2varDeserializer());
-        gsonBuilder.registerTypeAdapter(Cd2con.class, new Cd2conDeserializer());
+        Cd2cstDeserializer d2cstDeserializer = new Cd2cstDeserializer(type_fac);
+        gsonBuilder.registerTypeAdapter(Cd2cst.class, d2cstDeserializer);
+
+        Cd2varDeserializer d2varDeserializer = new Cd2varDeserializer();
+        gsonBuilder.registerTypeAdapter(Cd2var.class, d2varDeserializer);
+
+        Cd2conDeserializer d2conDeserializer = new Cd2conDeserializer();
+        gsonBuilder.registerTypeAdapter(Cd2con.class, d2conDeserializer);
+
         gsonBuilder.registerTypeAdapter(Cd2sym.class, new Cd2symDeserializer(type_fac));
 
 
@@ -160,12 +166,13 @@ public class PostiatsLevel2ParserJson {
 
         /* *********** statics *********** */
 
-        gsonBuilder.registerTypeAdapter(Cs2cst.class, new Cs2cstDeserializer());
-        gsonBuilder.registerTypeAdapter(Cs2var.class, new Cs2varDeserializer());
+        Cs2cstDeserializer s2cstDeserializer = new Cs2cstDeserializer();
+        gsonBuilder.registerTypeAdapter(Cs2cst.class, s2cstDeserializer);
 
+        Cs2varDeserializer s2varDeserializer = new Cs2varDeserializer();
+        gsonBuilder.registerTypeAdapter(Cs2var.class, s2varDeserializer);
 
         gsonBuilder.registerTypeAdapter(Ifunclo.class, new IfuncloDeserializer());
-
 
         gsonBuilder.registerTypeAdapter(Is2rt.class, new Is2rtDeserializer());
         gsonBuilder.registerTypeAdapter(S2RTbas.class, new S2RTbasDeserializer());
@@ -205,8 +212,11 @@ public class PostiatsLevel2ParserJson {
         
 
         /* *********** all *********** */
-        
-        gsonBuilder.registerTypeAdapter(PostiatsProgram.class, new PostiatsProgramDeserializer());
+
+        PostiatsProgramDeserializer programDeserializer =
+            new PostiatsProgramDeserializer(s2cstDeserializer, s2varDeserializer,
+                    d2cstDeserializer, d2varDeserializer, d2conDeserializer);
+        gsonBuilder.registerTypeAdapter(PostiatsProgram.class, programDeserializer);
         
         m_gson = gsonBuilder.create();
     }
