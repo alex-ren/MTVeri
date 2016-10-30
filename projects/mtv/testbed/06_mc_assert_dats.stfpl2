@@ -1,0 +1,14 @@
+D2Cnone
+
+staload "/tmp/conats35232502910657/conats.sats"
+
+val g_63 = 3
+
+prval () = D2Ecst<mc_assert_2585:((bool) -<fun> void)> (<D2Esym>(>) (g_63, 4))
+
+%{
+#assert main deadlockfree;
+
+#assert main |= G sys_assertion;
+
+%}

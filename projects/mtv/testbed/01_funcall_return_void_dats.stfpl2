@@ -1,0 +1,29 @@
+staload "/home/grad2/aren/workspace/Postiats/projects/utfpl/src/jats/utfpl/stfpl/test/conats.sats"
+
+fun foo1_63 = lam () <fun> = 
+  <D2EannFunclo><fun>(
+    <D2EannSeff>(
+      ():void:t@ype))
+
+fun foo2_64 = lam () <fun> = 
+  <D2EannFunclo><fun>(
+    <D2EannSeff>(
+      let
+        val x_65 = foo1_63 ()
+      in
+        3
+      end:int:t@ype))
+
+fun foo3_66 = lam () <fun> = 
+  <D2EannFunclo><fun>(
+    <D2EannSeff>(
+      foo1_63 ():void:t@ype))
+
+val () = D2Ecst<mc_print_2588:{a_3886_0:t@ype}(((a_3886_0:t@ype) -<fun> void))> (foo2_64 ())
+
+%{
+#assert main deadlockfree;
+
+#assert main |= G sys_assertion;
+
+%}

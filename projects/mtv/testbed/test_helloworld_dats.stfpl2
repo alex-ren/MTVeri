@@ -1,0 +1,44 @@
+#include ...
+
+#include ...
+
+staload "/home/alex/workspace/Postiats/projects/utfpl/src/jats/utfpl/stfpl/test/foo.sats"
+
+"D2Cdcstdecs" add_2892:((int, int) -<fun> int):type
+
+fun foo1_3447 = lam (<P2Tann>(x_3448:@{0 = int, 1 = int}:t@ype), <P2Tann>(y_3449:int:t@ype)) <clo> = 
+  <D2EannSeff>(
+    3:int:t@ype)
+
+fun foo2_3450 = lam (<P2Tann>(x_3451:@{0 = int, 1 = int}:t@ype), <P2Tann>(y_3452:int:t@ype)) <clo> = 
+  <D2EannSeff>(
+    <D2Esym>(+) (foo1_3447 (x_3451, y_3452), y_3452):int:t@ype)
+
+fun foo3_3453 = lam (<P2Tann>(x_3454:int:t@ype)) <clo> = 
+  <D2EannSeff>(
+    ( | 3, x_3454):@{0 = int, 1 = int}:t@ype)
+
+fun foo4_3455 = lam (<P2Tann>(x_3456:int:t@ype)) <clo> = 
+  <D2EannSeff>(
+    D2Ecst<add_2892:((int, int) -<fun> int):type> (x_3456, 2):int:t@ype)
+
+fun foo5_3457 = lam (<P2Tann>(x_3458:int:t@ype)) <clo> = 
+  <D2EannSeff>(
+    ():void:t@ype)
+
+fun foo6_3459 = lam () <clo> = 
+  <D2EannSeff>(
+    let
+      val x_3460 = foo5_3457 (3)
+    in
+      x_3460
+    end:void:t@ype)
+
+implement main_void_0_56:(() -<fun> void):type = lam () <fun> = 
+  <D2EannFunclo><fun>(
+    <D2EannSeff>(
+      let
+        val () = <D2Esym>(print) ("Helloworld")
+      in
+        ()
+      end:void:t@ype))

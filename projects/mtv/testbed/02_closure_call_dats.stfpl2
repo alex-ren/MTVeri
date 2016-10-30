@@ -1,0 +1,26 @@
+fun foo1_63 = lam () <clo> = 
+  <D2EannFunclo><clo_ref>(
+    <D2EannSeff>(
+      ():void:t@ype))
+
+fun foo2_64 = lam () <clo> = 
+  <D2EannFunclo><clo_ref>(
+    <D2EannSeff>(
+      let
+        val x_65 = foo1_63 ()
+        val y_66 = foo1_63
+      in
+        3
+      end:int:t@ype))
+
+fun foo3_67 = lam () <clo> = 
+  <D2EannFunclo><clo_ref>(
+    <D2EannSeff>(
+      foo1_63 ():void:t@ype))
+
+%{
+#assert main deadlockfree;
+
+#assert main |= G sys_assertion;
+
+%}
